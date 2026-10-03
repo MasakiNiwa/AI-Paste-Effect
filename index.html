@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>AI Paste Effect</title>
+    <meta name="description" content="普段使いのAIからコピペするエフェクトアプリ。AIが画像に合わせて設計したアニメ・漫画演出を、貼り付けるだけで適用できます。" />
+    <meta property="og:title" content="AI Paste Effect" />
+    <meta property="og:description" content="普段使いのAIからコピペするエフェクトアプリ" />
+    <meta name="theme-color" content="#f7f6fb" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#121118" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <script>
+      // 初回描画前にテーマを当ててちらつきを防ぐ
+      try {
+        var s = JSON.parse(localStorage.getItem('ai-paste-effect:settings') || '{}');
+        var t = (s.state && s.state.theme) || 'system';
+        if (t === 'system') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
