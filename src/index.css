@@ -1,0 +1,82 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+@theme {
+  --font-sans: 'Inter', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic UI', 'Meiryo', system-ui, sans-serif;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-err: var(--err);
+}
+
+:root {
+  --bg: #f7f6fb;
+  --surface: #ffffff;
+  --surface-2: #f1eff7;
+  --line: #e4e1ee;
+  --ink: #1d1b26;
+  --muted: #6d6a7c;
+  --accent: #7a5cff;
+  --accent-ink: #ffffff;
+  --ok: #1f9d6b;
+  --warn: #b7791f;
+  --err: #d64545;
+  --grad: linear-gradient(135deg, #ff7eb6 0%, #7a6cff 100%);
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bg: #121118;
+  --surface: #1b1a23;
+  --surface-2: #24222f;
+  --line: #2f2d3c;
+  --ink: #eeecf6;
+  --muted: #9b98ad;
+  --accent: #9d86ff;
+  --accent-ink: #14121c;
+  --ok: #4cc795;
+  --warn: #e0a84a;
+  --err: #f07373;
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  min-height: 100dvh;
+}
+
+.bg-grad {
+  background-image: var(--grad);
+}
+
+.text-grad {
+  background-image: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.checker {
+  background-color: var(--surface-2);
+  background-image:
+    linear-gradient(45deg, var(--line) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--line) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--line) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--line) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+}
