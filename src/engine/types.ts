@@ -29,6 +29,7 @@ export const CATEGORIES = {
   light: '光',
   particle: '粒子・装飾',
   manga: '漫画表現',
+  reaction: 'リアクション・描き文字',
   texture: '質感',
   distortion: 'ぼかし・歪み',
 } as const;

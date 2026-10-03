@@ -164,3 +164,34 @@ export const vignette = defineEffect({
     return out;
   },
 });
+
+export const posterize = defineEffect({
+  id: 'posterize',
+  label: 'ポスタリゼーション',
+  category: 'color',
+  kind: 'filter',
+  defaultBlend: 'normal',
+  description: '明るさの階調を減らして、アニメ塗り（セル画の影）・ポスター・版画のようにする。色味は保たれる。levels が少ないほど大胆。opacity を下げると質感だけ足せる。',
+  params: {
+    levels: p.int(2, 16, 4, '明るさの階調数'),
+  },
+  render(ctx, v) {
+    const out = ctx.createCanvas();
+    const g = ctx2d(out);
+    g.drawImage(ctx.source, 0, 0);
+    const img = g.getImageData(0, 0, ctx.width, ctx.height);
+    const d = img.data;
+    // 明るさだけを段階化し、色相・彩度は保つ（セル塗りの影のような段差になる）
+    const n = v.levels - 1;
+    for (let i = 0; i < d.length; i += 4) {
+      const l = (d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114) / 255;
+      if (l <= 0) continue;
+      const k = Math.max(0.5 / n, Math.round(l * n) / n) / l;
+      d[i] = Math.min(255, d[i] * k);
+      d[i + 1] = Math.min(255, d[i + 1] * k);
+      d[i + 2] = Math.min(255, d[i + 2] * k);
+    }
+    g.putImageData(img, 0, 0);
+    return out;
+  },
+});
