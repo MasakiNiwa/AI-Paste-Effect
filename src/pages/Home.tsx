@@ -31,14 +31,15 @@ function PromptStep() {
   const applied = useAppliedParse();
   const renderErrors = useOutput((s) => s.renderErrors);
   const includeSpec = useSettings((s) => s.includeSpecInRevision);
+  const talk = useSettings((s) => s.aiTalk);
 
   const copyPrompt = async () => {
-    const ok = await copyText(buildInitialPrompt());
+    const ok = await copyText(buildInitialPrompt({ talk }));
     toast(ok ? 'プロンプトをコピーしました' : 'コピーできませんでした', ok ? 'ok' : 'err');
   };
   const copyRevision = async () => {
     const ok = await copyText(
-      buildRevisionPrompt({ currentPlan: applied.raw, warnings: [...applied.warnings, ...renderErrors], includeSpec }),
+      buildRevisionPrompt({ currentPlan: applied.raw, warnings: [...applied.warnings, ...renderErrors], includeSpec, talk }),
     );
     toast(ok ? '修正依頼をコピーしました' : 'コピーできませんでした', ok ? 'ok' : 'err');
   };

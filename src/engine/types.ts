@@ -32,6 +32,7 @@ export const CATEGORIES = {
   reaction: 'リアクション・描き文字',
   texture: '質感',
   distortion: 'ぼかし・歪み',
+  tamani: 'たまにエフェクト',
 } as const;
 export type Category = keyof typeof CATEGORIES;
 

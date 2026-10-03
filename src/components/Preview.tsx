@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react';
-import { Download, Hand, Loader2, Share2, SlidersHorizontal, Sparkles } from 'lucide-react';
+import { ChevronDown, Download, Hand, Loader2, MessageCircle, Share2, SlidersHorizontal, Sparkles } from 'lucide-react';
 import { useAppliedParse } from '../hooks/usePipeline';
 import { canvasToBlob, downloadBlob, extensionOf } from '../lib/image';
 import { useOutput } from '../store/output';
@@ -154,11 +154,46 @@ function CompareToggle() {
   );
 }
 
+/** AI の語りを軽く整形して表示する（見出し記号や強調記号は外す） */
+function AiComment({ text }: { text: string }) {
+  const [open, setOpen] = useState(false);
+  const lines = text
+    .split('\n')
+    .map((l) => l.replace(/\*\*(.+?)\*\*/g, '$1').replace(/^\s*[-*]\s+/, '・'));
+  const long = text.length > 140 || lines.length > 4;
+  return (
+    <div className="rounded-xl border border-line bg-surface px-3 py-2.5">
+      <p className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-accent">
+        <MessageCircle className="size-3.5" />
+        AI のコメント
+      </p>
+      <div className={`space-y-1 text-[13px] leading-relaxed text-ink/90 ${long && !open ? 'line-clamp-4' : ''}`}>
+        {lines.map((l, i) =>
+          /^\s*#+\s*/.test(l) ? (
+            <p key={i} className="pt-1 font-semibold">
+              {l.replace(/^\s*#+\s*/, '')}
+            </p>
+          ) : l.trim() ? (
+            <p key={i}>{l}</p>
+          ) : null,
+        )}
+      </div>
+      {long && (
+        <button type="button" onClick={() => setOpen(!open)} className="mt-1 flex items-center gap-1 text-xs text-muted hover:text-ink">
+          <ChevronDown className={`size-3.5 transition ${open ? 'rotate-180' : ''}`} />
+          {open ? '閉じる' : 'もっと見る'}
+        </button>
+      )}
+    </div>
+  );
+}
+
 export function Preview({ fill = false }: { fill?: boolean }) {
   const result = useOutput((s) => s.result);
   const imageName = useSession((s) => s.imageName);
   const format = useSettings((s) => s.exportFormat);
-  const plan = useAppliedParse().plan;
+  const applied = useAppliedParse();
+  const plan = applied.plan;
 
   const exportBlob = async () => {
     const blob = await canvasToBlob(result!.canvas, format);
@@ -202,10 +237,15 @@ export function Preview({ fill = false }: { fill?: boolean }) {
           </Button>
         </div>
       </div>
-      {plan?.title && result && (
-        <div className="rounded-xl bg-surface-2 px-3 py-2.5">
-          <p className="text-sm font-semibold">{plan.title}</p>
-          {plan.intent && <p className="mt-0.5 text-xs text-muted">{plan.intent}</p>}
+      {result && (plan?.title || applied.comment) && (
+        <div className={`space-y-3 ${fill ? 'max-h-[35dvh] shrink-0 overflow-y-auto' : ''}`}>
+          {plan?.title && (
+            <div className="rounded-xl bg-surface-2 px-3 py-2.5">
+              <p className="text-sm font-semibold">{plan.title}</p>
+              {plan.intent && <p className="mt-0.5 text-xs text-muted">{plan.intent}</p>}
+            </div>
+          )}
+          {applied.comment && <AiComment text={applied.comment} />}
         </div>
       )}
     </div>

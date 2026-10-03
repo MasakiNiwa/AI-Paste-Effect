@@ -77,6 +77,39 @@ describe('plan parsing', () => {
     expect(r.warnings.length).toBeGreaterThanOrEqual(3);
   });
 
+  it('finds the plan among free-form prose and keeps the prose as a comment', () => {
+    const text = [
+      '素敵なイラストですね！ {夕方} の空気感を足しました。',
+      '',
+      '```json',
+      '{"title":"夕暮れ","blocks":[{"id":"a","layers":[{"effect":"vignette"}]}]}',
+      '```',
+      '',
+      "もう少し強めがよければ言ってください。It's easy!",
+    ].join('\n');
+    const r = parsePlan(text);
+    expect(r.errors).toEqual([]);
+    expect(r.plan?.title).toBe('夕暮れ');
+    expect(r.comment).toContain('素敵なイラスト');
+    expect(r.comment).toContain('もう少し強め');
+    expect(r.comment).not.toContain('blocks');
+  });
+
+  it('works without code fences and picks the object that has blocks/layers', () => {
+    const r = parsePlan('設定例 {"a": 1} です。本番→ {"layers":[{"effect":"blur"}]} 以上');
+    expect(r.errors).toEqual([]);
+    expect(r.plan?.layers[0].effect.id).toBe('blur');
+  });
+
+  it('loads TaMaNi-Effect effects through the adapter', () => {
+    const r = parsePlan(JSON.stringify({ layers: [{ effect: 'tamani.dots', params: { spacing: 999, mode: 'pointillism', ink: '#ff0000' } }] }));
+    expect(r.errors).toEqual([]);
+    const l = r.plan!.layers[0];
+    expect(l.effect.category).toBe('tamani');
+    expect(l.params.spacing).toBe(80);
+    expect(l.params.mode).toBe('pointillism');
+  });
+
   it('reports errors for broken input', () => {
     expect(parsePlan('').errors.length).toBe(1);
     expect(parsePlan('hello').errors[0]).toContain('見つかりません');
@@ -121,8 +154,12 @@ describe('prompt', () => {
     const p = buildInitialPrompt();
     for (const e of EFFECTS) expect(p).toContain(`**${e.id}**`);
   });
+  it('asks the AI to talk freely only when enabled', () => {
+    expect(buildInitialPrompt({ talk: true })).toContain('自由に語って');
+    expect(buildInitialPrompt({ talk: false })).not.toContain('自由に語って');
+  });
   it('includes current plan and warnings in revision prompt', () => {
-    const p = buildRevisionPrompt({ currentPlan: { a: 1 }, warnings: ['W1'], includeSpec: false });
+    const p = buildRevisionPrompt({ currentPlan: { a: 1 }, warnings: ['W1'], includeSpec: false, talk: true });
     expect(p).toContain('"a": 1');
     expect(p).toContain('W1');
     expect(p).not.toContain('使えるエフェクト');
