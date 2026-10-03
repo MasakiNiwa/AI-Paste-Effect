@@ -44,8 +44,12 @@ export interface EnumSpec<O extends string = string> extends BaseSpec<O> {
 export interface BooleanSpec extends BaseSpec<boolean> {
   type: 'boolean';
 }
+export interface TextSpec extends BaseSpec<string> {
+  type: 'text';
+  maxLength: number;
+}
 
-export type ParamSpec = NumberSpec | ColorSpec | ColorsSpec | PointSpec | EnumSpec | BooleanSpec;
+export type ParamSpec = NumberSpec | ColorSpec | ColorsSpec | PointSpec | EnumSpec | BooleanSpec | TextSpec;
 export type ParamSchema = Record<string, ParamSpec>;
 
 type ValueOf<S extends ParamSpec> = S extends NumberSpec
@@ -60,7 +64,9 @@ type ValueOf<S extends ParamSpec> = S extends NumberSpec
           ? O
           : S extends BooleanSpec
             ? boolean
-            : never;
+            : S extends TextSpec
+              ? string
+              : never;
 
 export type ParamValues<S extends ParamSchema> = { [K in keyof S]: ValueOf<S[K]> };
 
@@ -100,6 +106,7 @@ export const p = {
     desc,
   }),
   bool: (def: boolean, desc: string): BooleanSpec => ({ type: 'boolean', default: def, desc }),
+  text: (def: string, desc: string, maxLength = 40): TextSpec => ({ type: 'text', default: def, desc, maxLength }),
 };
 
 export type Warn = (message: string) => void;
@@ -171,6 +178,12 @@ function normalizeOne(spec: ParamSpec, raw: unknown, path: string, warn: Warn): 
       if (raw === 'false' || raw === 0) return false;
       return fallback('true/false ではない');
     }
+    case 'text': {
+      if (typeof raw !== 'string' && typeof raw !== 'number') return fallback('文字列ではない');
+      const t = String(raw).slice(0, spec.maxLength);
+      if (String(raw).length > spec.maxLength) warn(`${path}: ${spec.maxLength} 文字までに切り詰めました`);
+      return t;
+    }
   }
 }
 
@@ -214,5 +227,7 @@ export function describeParam(name: string, spec: ParamSpec): string {
       return `${name}: ${spec.options.map((o) => `"${o}"`).join(' | ')}（既定 ${d}）${spec.desc}`;
     case 'boolean':
       return `${name}: true/false（既定 ${d}）${spec.desc}`;
+    case 'text':
+      return `${name}: 文字列 ${spec.maxLength}文字まで（既定 ${d}）${spec.desc}`;
   }
 }

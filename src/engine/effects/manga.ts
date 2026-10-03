@@ -184,3 +184,57 @@ export const frame = defineEffect({
     return out;
   },
 });
+
+export const crossHatch = defineEffect({
+  id: 'crossHatch',
+  label: 'ハッチング',
+  category: 'manga',
+  kind: 'filter',
+  defaultBlend: 'multiply',
+  description:
+    '暗い部分を斜線の重なり（カケアミ・ハッチング）で表現する（CrossHatchFilter）。ペン画・劇画調・影の強調に。blend "multiply" と region で影や背景にだけ入れるのが自然。',
+  params: {},
+  async render(ctx) {
+    const { CrossHatchFilter } = await ctx.filters();
+    return ctx.applyFilters([new CrossHatchFilter()]);
+  },
+});
+
+export const inkLines = defineEffect({
+  id: 'inkLines',
+  label: '輪郭線強調',
+  category: 'manga',
+  kind: 'filter',
+  defaultBlend: 'multiply',
+  description: '画像の輪郭を検出してペン入れのような線を重ねる（Sobel）。線画のメリハリ・漫画原稿風・スケッチ風に。',
+  params: {
+    threshold: p.num(0, 1, 0.15, 'この強さ以上の輪郭だけを線にする'),
+    strength: p.num(0, 3, 1.2, '線の濃さ'),
+    color: p.color('#1a1a1a', '線の色'),
+  },
+  render(ctx, v) {
+    const { width: W, height: H } = ctx;
+    const src = ctx2d(ctx.source).getImageData(0, 0, W, H).data;
+    const lum = new Float32Array(W * H);
+    for (let i = 0; i < W * H; i++) lum[i] = (src[i * 4] * 0.299 + src[i * 4 + 1] * 0.587 + src[i * 4 + 2] * 0.114) / 255;
+    const out = ctx.createCanvas();
+    const g = ctx2d(out);
+    const img = g.createImageData(W, H);
+    const d = img.data;
+    for (let y = 1; y < H - 1; y++) {
+      for (let x = 1; x < W - 1; x++) {
+        const i = y * W + x;
+        const gx = lum[i - W + 1] + 2 * lum[i + 1] + lum[i + W + 1] - lum[i - W - 1] - 2 * lum[i - 1] - lum[i + W - 1];
+        const gy = lum[i + W - 1] + 2 * lum[i + W] + lum[i + W + 1] - lum[i - W - 1] - 2 * lum[i - W] - lum[i - W + 1];
+        const e = Math.hypot(gx, gy);
+        const a = Math.min(1, Math.max(0, (e - v.threshold) * v.strength * 2));
+        d[i * 4] = v.color.r;
+        d[i * 4 + 1] = v.color.g;
+        d[i * 4 + 2] = v.color.b;
+        d[i * 4 + 3] = a * 255 * v.color.a;
+      }
+    }
+    g.putImageData(img, 0, 0);
+    return out;
+  },
+});

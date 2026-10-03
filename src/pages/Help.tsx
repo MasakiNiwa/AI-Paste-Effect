@@ -22,6 +22,13 @@ const STEPS = [
   ['気に入らなければ AI と相談', '「修正依頼をコピー」で今の JSON 入りの依頼文をコピーし、結果画像も添えて「もっと〇〇に」と頼みます。返ってきた JSON を貼り直せば反映されます。'],
 ] as const;
 
+const CREDITS = [
+  ['PixiJS', 'https://pixijs.com/', 'MIT License'],
+  ['pixi-filters', 'https://github.com/pixijs/filters', 'MIT License'],
+  ['Rough.js', 'https://roughjs.com/', 'MIT License'],
+  ['Google Fonts（描き文字の書体）', 'https://fonts.google.com/', 'SIL Open Font License'],
+] as const;
+
 export default function Help() {
   return (
     <div className="mx-auto max-w-2xl space-y-5">
@@ -47,7 +54,8 @@ export default function Help() {
             「エモく」「90年代アニメの背景っぽく」「衝撃のシーンみたいに」など、<b>雰囲気や場面</b>で伝えるのがおすすめです。
           </li>
           <li>修正の時は「キラキラを半分に」「顔は暗くしないで」など、<b>何をどうしたいか</b>を具体的に。</li>
-          <li>結果画像を AI に添付すると、仕上がりを見ながら直してもらえます（スマホは「共有」ボタンが便利）。</li>
+          <li>結果画像を AI に添付すると、仕上がりを見ながら直してもらえます（スマホは「結果」タブの「共有」ボタンが便利）。</li>
+          <li>「ドーン!」などの描き文字や、汗・怒りマークなどの漫符も頼めます。</li>
           <li>新しいチャットで修正を頼む時は、設定の「修正依頼にも仕様を含める」をオンにしてください。</li>
           <li>JSON が読めない時は、エラー内容ごと AI に伝えると直してもらえます。</li>
         </ul>
@@ -58,7 +66,7 @@ export default function Help() {
           このアプリは <b>画像そのものを描き変えません</b>。色調・光・粒子・集中線・トーン・質感・ぼかしなどの「演出」を重ねるだけです。
           顔やポーズを変えたり、物を描き足したりはできません。
         </p>
-        <p>画像の処理はすべてお使いの端末のブラウザ内で行われ、画像がどこかに送信されることはありません。</p>
+        <p>画像の処理はすべてお使いの端末のブラウザ内で行われ、画像がどこかに送信されることはありません（描き文字を使う時だけ、その文字の書体を Google Fonts から読み込みます）。</p>
       </Section>
 
       <Section title={`エフェクト一覧（${EFFECTS.length} 種類）`}>
@@ -103,17 +111,19 @@ export default function Help() {
           </span>
           <ExternalLink className="size-4 text-muted" />
         </a>
-        <p className="text-xs text-muted">
-          エフェクトの一部に{' '}
-          <a className="underline" href="https://pixijs.com/" target="_blank" rel="noreferrer">
-            PixiJS
-          </a>{' '}
-          と{' '}
-          <a className="underline" href="https://github.com/pixijs/filters" target="_blank" rel="noreferrer">
-            pixi-filters
-          </a>
-          （MIT License）を使用しています。
-        </p>
+        <div className="text-xs text-muted">
+          <p className="mb-1">次の公開ライブラリ・フォントを使わせていただいています。</p>
+          <ul className="list-disc space-y-0.5 pl-5">
+            {CREDITS.map(([name, url, license]) => (
+              <li key={name}>
+                <a className="underline" href={url} target="_blank" rel="noreferrer">
+                  {name}
+                </a>
+                （{license}）
+              </li>
+            ))}
+          </ul>
+        </div>
       </Section>
     </div>
   );

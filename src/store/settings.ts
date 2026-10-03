@@ -2,7 +2,8 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export type Theme = 'system' | 'light' | 'dark';
-export type ExportFormat = 'png' | 'jpeg';
+export type ExportFormat = 'png' | 'jpeg' | 'webp';
+export type CompareMode = 'hold' | 'slider';
 
 export interface Settings {
   theme: Theme;
@@ -15,6 +16,8 @@ export interface Settings {
   includeSpecInRevision: boolean;
   /** 最後に貼った JSON を次回も残す */
   rememberJson: boolean;
+  /** 元画像との比較方法 */
+  compareMode: CompareMode;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -24,6 +27,7 @@ export const DEFAULT_SETTINGS: Settings = {
   autoApply: true,
   includeSpecInRevision: false,
   rememberJson: true,
+  compareMode: 'hold',
 };
 
 interface SettingsStore extends Settings {

@@ -1,7 +1,7 @@
 {
   "name": "ai-paste-effect",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "普段使いのAIからコピペするエフェクトアプリ",
   "license": "MIT",
   "type": "module",
@@ -20,6 +20,7 @@
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-router-dom": "^7.18.4",
+    "roughjs": "^4.6.6",
     "zod": "^4.6.5",
     "zustand": "^5.0.15"
   },

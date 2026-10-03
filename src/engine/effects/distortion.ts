@@ -114,3 +114,131 @@ export const glitch = defineEffect({
     ]);
   },
 });
+
+/** 余白付きキャンバス上での 0〜1 座標に変換する（中心を正規化座標で受け取るフィルタ用） */
+const padded = (ctx: { width: number; height: number; filterPad: number }, x: number, y: number) => ({
+  x: (x * ctx.width + ctx.filterPad) / (ctx.width + ctx.filterPad * 2),
+  y: (y * ctx.height + ctx.filterPad) / (ctx.height + ctx.filterPad * 2),
+});
+
+export const shockwave = defineEffect({
+  id: 'shockwave',
+  label: '衝撃波',
+  category: 'distortion',
+  kind: 'filter',
+  defaultBlend: 'normal',
+  description: '中心から広がるリング状の空間の歪み（ShockwaveFilter）。パンチ・着地・爆発・魔法の発動の瞬間に。',
+  params: {
+    center: p.point(0.5, 0.5, '衝撃の中心'),
+    radius: p.num(0.05, 1.5, 0.35, 'リングの半径（短辺比）'),
+    amplitude: p.num(0, 1, 0.4, '歪みの強さ'),
+    wavelength: p.num(0.01, 0.3, 0.08, 'リングの幅（短辺比）'),
+    brightness: p.num(0.5, 2, 1.15, 'リング部分の明るさ'),
+  },
+  async render(ctx, v) {
+    const { ShockwaveFilter } = await ctx.filters();
+    const r = v.radius * ctx.short;
+    return ctx.applyFilters([
+      new ShockwaveFilter({
+        center: { x: v.center.x * ctx.width + ctx.filterPad, y: v.center.y * ctx.height + ctx.filterPad },
+        // time × speed がリングの位置になる
+        speed: r,
+        time: 1,
+        radius: -1,
+        amplitude: v.amplitude * ctx.short * 0.08,
+        wavelength: v.wavelength * ctx.short,
+        brightness: v.brightness,
+      }),
+    ]);
+  },
+});
+
+export const bulgePinch = defineEffect({
+  id: 'bulgePinch',
+  label: '膨張・収縮',
+  category: 'distortion',
+  kind: 'filter',
+  defaultBlend: 'normal',
+  description: '円形に膨らませる（魚眼・迫力）またはすぼめる（BulgePinchFilter）。strength が正で膨張、負で収縮。顔に使うと絵が崩れるので背景や手前の物向き。',
+  params: {
+    center: p.point(0.5, 0.5, '中心'),
+    radius: p.num(0.05, 1.5, 0.5, '効果の半径（短辺比）'),
+    strength: p.num(-1, 1, 0.4, '強さ（正=膨張 / 負=収縮）'),
+  },
+  async render(ctx, v) {
+    const { BulgePinchFilter } = await ctx.filters();
+    return ctx.applyFilters([
+      new BulgePinchFilter({ center: padded(ctx, v.center.x, v.center.y), radius: v.radius * ctx.short, strength: v.strength }),
+    ]);
+  },
+});
+
+export const twist = defineEffect({
+  id: 'twist',
+  label: 'うず巻き',
+  category: 'distortion',
+  kind: 'filter',
+  defaultBlend: 'normal',
+  description: '中心の周りを渦状にねじる（TwistFilter）。めまい・混乱・催眠・異空間・回想への入り口に。',
+  params: {
+    center: p.point(0.5, 0.5, '中心'),
+    radius: p.num(0.05, 1.5, 0.45, '効果の半径（短辺比）'),
+    angle: p.num(-720, 720, 120, 'ねじる角度（度）'),
+  },
+  async render(ctx, v) {
+    const { TwistFilter } = await ctx.filters();
+    return ctx.applyFilters([
+      new TwistFilter({
+        offset: { x: v.center.x * ctx.width + ctx.filterPad, y: v.center.y * ctx.height + ctx.filterPad },
+        radius: v.radius * ctx.short,
+        angle: (v.angle * Math.PI) / 180,
+      }),
+    ]);
+  },
+});
+
+export const pixelate = defineEffect({
+  id: 'pixelate',
+  label: 'モザイク・ドット絵',
+  category: 'distortion',
+  kind: 'filter',
+  defaultBlend: 'normal',
+  description: '画像を粗いドットにする（PixelateFilter）。レトロゲーム風・電脳世界・伏せ字的な演出に。region で一部だけにも。',
+  params: {
+    size: p.num(0.003, 0.08, 0.012, 'ドットの大きさ（短辺比）'),
+  },
+  async render(ctx, v) {
+    const { PixelateFilter } = await ctx.filters();
+    return ctx.applyFilters([new PixelateFilter(Math.max(2, Math.round(v.size * ctx.short)))]);
+  },
+});
+
+export const reflection = defineEffect({
+  id: 'reflection',
+  label: '水面反射',
+  category: 'distortion',
+  kind: 'filter',
+  defaultBlend: 'normal',
+  description: 'boundary より下を水面のように揺らす（ReflectionFilter）。mirror=true で上の景色を映し込む。水辺・夏・幻想的な場面に。',
+  params: {
+    boundary: p.num(0, 1, 0.7, '水面の高さ（画像高さ比）'),
+    mirror: p.bool(false, '上の景色を鏡のように映すか'),
+    amplitude: p.num(0, 0.05, 0.006, '揺れの大きさ（短辺比）'),
+    wavelength: p.num(0.01, 0.3, 0.1, '波の間隔（短辺比）'),
+  },
+  async render(ctx, v) {
+    const { ReflectionFilter } = await ctx.filters();
+    const a = v.amplitude * ctx.short;
+    const w = v.wavelength * ctx.short;
+    return ctx.applyFilters([
+      new ReflectionFilter({
+        boundary: padded(ctx, 0, v.boundary).y,
+        mirror: v.mirror,
+        amplitude: [a * 0.3, a],
+        waveLength: [w * 0.5, w],
+        alpha: [1, 1],
+        time: ctx.rng() * 10,
+      }),
+    ]);
+  },
+});

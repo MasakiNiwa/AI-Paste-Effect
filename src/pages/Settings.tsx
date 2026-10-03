@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { RotateCcw } from 'lucide-react';
 import { Button, Card } from '../components/ui';
 import { useToast } from '../components/Toast';
+import { useSession } from '../store/session';
 import { useSettings, type ExportFormat, type Theme } from '../store/settings';
 
 function Row({ title, desc, children }: { title: string; desc?: string; children: ReactNode }) {
@@ -97,18 +98,26 @@ export default function Settings() {
               ]}
             />
           </Row>
-          <Row title="保存形式">
+          <Row title="保存形式" desc="WebP はファイルが小さく済みます（非対応のブラウザでは PNG で保存されます）。">
             <Segmented<ExportFormat>
               value={s.exportFormat}
               onChange={(exportFormat) => s.set({ exportFormat })}
               options={[
                 { value: 'png', label: 'PNG' },
                 { value: 'jpeg', label: 'JPEG' },
+                { value: 'webp', label: 'WebP' },
               ]}
             />
           </Row>
           <Row title="貼り付けたら自動で適用" desc="オフにすると「適用」ボタンを押した時だけ描画します。">
-            <Toggle label="自動で適用" checked={s.autoApply} onChange={(autoApply) => s.set({ autoApply })} />
+            <Toggle
+              label="自動で適用"
+              checked={s.autoApply}
+              onChange={(autoApply) => {
+                s.set({ autoApply });
+                if (autoApply) useSession.getState().apply();
+              }}
+            />
           </Row>
         </div>
       </Card>

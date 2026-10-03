@@ -9,6 +9,7 @@ import * as color from './color';
 import * as light from './light';
 import * as particle from './particle';
 import * as manga from './manga';
+import * as reaction from './reaction';
 import * as texture from './texture';
 import * as distortion from './distortion';
 
@@ -19,6 +20,7 @@ export const EFFECTS: AnyEffect[] = [
   ...Object.values(light),
   ...Object.values(particle),
   ...Object.values(manga),
+  ...Object.values(reaction),
   ...Object.values(texture),
   ...Object.values(distortion),
 ] as EffectDefinition<ParamSchema>[] as AnyEffect[];

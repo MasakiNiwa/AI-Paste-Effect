@@ -84,6 +84,16 @@ describe('plan parsing', () => {
   });
 });
 
+describe('text params', () => {
+  it('accepts strings, truncates long text and warns', () => {
+    const r = parsePlan(JSON.stringify({ layers: [{ effect: 'soundText', params: { text: 'ドドドドドドドドドドドドドドド', font: 'nope' } }] }));
+    const l = r.plan!.layers[0];
+    expect(l.params.text).toBe('ドドドドドドドドドドドド');
+    expect(l.params.font).toBe('impact');
+    expect(r.warnings.length).toBe(2);
+  });
+});
+
 describe('regions and masks', () => {
   it('normalizes shorthands', () => {
     const warns: string[] = [];
