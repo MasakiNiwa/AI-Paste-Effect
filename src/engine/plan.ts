@@ -46,49 +46,108 @@ export interface ParseResult {
   plan?: CompiledPlan;
   /** 元の JSON オブジェクト（AI への修正依頼に添える） */
   raw?: unknown;
+  /** JSON の外に書かれていた AI の語り */
+  comment?: string;
   errors: string[];
   warnings: string[];
 }
 
-/** 文章やコードフェンスに囲まれていても、最初の JSON オブジェクトを取り出す */
-export function extractJsonText(text: string): string | undefined {
-  const start = text.indexOf('{');
-  if (start < 0) return undefined;
+const isObj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
+
+interface Candidate {
+  json: string;
+  /** 返答全体の中での範囲（コメント抽出時に取り除く。コードフェンスも含む） */
+  from: number;
+  to: number;
+}
+
+/** start の { に対応する } の位置を返す（見つからなければ -1） */
+function matchBrace(text: string, start: number): number {
   let depth = 0;
-  let inString: string | null = null;
+  let inString = false;
   for (let i = start; i < text.length; i++) {
     const c = text[i];
     if (inString) {
       if (c === '\\') i++;
-      else if (c === inString) inString = null;
+      else if (c === '"') inString = false;
       continue;
     }
-    if (c === '"' || c === "'") inString = c;
+    if (c === '"') inString = true;
     else if (c === '{') depth++;
-    else if (c === '}') {
-      depth--;
-      if (depth === 0) return text.slice(start, i + 1);
-    }
+    else if (c === '}' && --depth === 0) return i;
   }
-  return text.slice(start); // 閉じていない → パーサにエラーを出させる
+  return -1;
 }
 
-function parseJson(text: string): { value?: unknown; error?: string } {
-  const body = extractJsonText(text);
-  if (body === undefined) return { error: 'JSON（{ … }）が見つかりません' };
+/** JSON らしき部分の候補を、優先度の高い順に挙げる（```json ブロック → 本文中の { … }） */
+function candidates(text: string): Candidate[] {
+  const out: Candidate[] = [];
+  const fence = /```[a-zA-Z0-9]*[ \t]*\r?\n?([\s\S]*?)```/g;
+  const fenced: [number, number][] = [];
+  for (let m; (m = fence.exec(text)); ) {
+    fenced.push([m.index, m.index + m[0].length]);
+    const body = m[1];
+    const b = body.indexOf('{');
+    if (b < 0) continue;
+    const e = matchBrace(body, b);
+    out.push({ json: e < 0 ? body.slice(b) : body.slice(b, e + 1), from: m.index, to: m.index + m[0].length });
+  }
+  for (let i = text.indexOf('{'); i >= 0; i = text.indexOf('{', i + 1)) {
+    if (fenced.some(([a, b]) => i >= a && i < b)) continue;
+    const e = matchBrace(text, i);
+    out.push({ json: e < 0 ? text.slice(i) : text.slice(i, e + 1), from: i, to: e < 0 ? text.length : e + 1 });
+    if (e >= 0) i = e; // 入れ子の内側は候補にしない
+  }
+  return out;
+}
+
+function tryParse(json: string): unknown {
   try {
-    return { value: JSON.parse(body) };
+    return JSON.parse(json);
   } catch {
-    try {
-      // 末尾カンマやコメントなど、AI が出しがちな崩れを許容する
-      return { value: JSON5.parse(body) };
-    } catch (e) {
-      return { error: `JSON として読めません: ${(e as Error).message}` };
-    }
+    // 末尾カンマやコメントなど、AI が出しがちな崩れを許容する
+    return JSON5.parse(json);
   }
 }
 
-const isObj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
+interface Extraction {
+  value?: unknown;
+  /** JSON 以外の部分（AI の語り） */
+  comment?: string;
+  error?: string;
+  json?: string;
+}
+
+/** AI の返答から演出プランの JSON と、それ以外の語りを取り出す */
+export function extractPlan(text: string): Extraction {
+  const list = candidates(text);
+  if (list.length === 0) return { error: 'JSON（{ … }）が見つかりません' };
+  let firstObj: { c: Candidate; v: unknown } | undefined;
+  let firstError: string | undefined;
+  for (const c of list) {
+    try {
+      const v = tryParse(c.json);
+      if (!isObj(v)) continue;
+      firstObj ??= { c, v };
+      if (Array.isArray(v.blocks) || Array.isArray(v.layers)) {
+        firstObj = { c, v };
+        break;
+      }
+    } catch (e) {
+      firstError ??= `JSON として読めません: ${(e as Error).message}`;
+    }
+  }
+  if (!firstObj) return { error: firstError ?? 'JSON（{ … }）が見つかりません' };
+  const { c, v } = firstObj;
+  const comment = (text.slice(0, c.from) + '\n\n' + text.slice(c.to)).replace(/\n{3,}/g, '\n\n').trim();
+  return { value: v, json: c.json, comment: comment || undefined };
+}
+
+/** 文章やコードフェンスに囲まれていても、演出プランの JSON 部分を取り出す */
+export function extractJsonText(text: string): string | undefined {
+  return extractPlan(text).json;
+}
+
 
 const num01 = (v: unknown, def: number) => {
   const n = typeof v === 'number' ? v : typeof v === 'string' ? Number(v) : NaN;
@@ -121,7 +180,7 @@ export function parsePlan(text: string): ParseResult {
   const warn = (m: string) => warnings.push(m);
 
   if (!text.trim()) return { errors: ['JSON が空です'], warnings };
-  const { value, error } = parseJson(text);
+  const { value, error, comment } = extractPlan(text);
   if (error) return { errors: [error], warnings };
   if (!isObj(value)) return { errors: ['JSON の一番外側はオブジェクト { … } である必要があります'], warnings };
 
@@ -185,6 +244,7 @@ export function parsePlan(text: string): ParseResult {
       layers,
     },
     raw: root,
+    comment,
     errors,
     warnings,
   };

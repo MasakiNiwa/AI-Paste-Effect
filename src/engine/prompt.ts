@@ -70,7 +70,20 @@ function jsonBlock(value: unknown): string {
   return '```json\n' + JSON.stringify(value, null, 2) + '\n```';
 }
 
-export function buildInitialPrompt(): string {
+/** 返答の形式の指示。talk=true なら JSON の前に自由に語ってもらう */
+function replyFormat(talk: boolean, revision: boolean): string {
+  if (!talk) return '返答は JSON を 1 つだけ ```json コードブロックで返してください。';
+  return revision
+    ? '返答では、まずどこをどう変えたか、そのねらいを自由に語ってください（さらに良くするアイデアや、別の方向性の提案があれば添えてもかまいません）。そのあとに修正版の JSON を 1 つだけ ```json コードブロックで書いてください。'
+    : '返答では、まず画像を見た感想や、どんな演出にしたか・そのねらいやこだわりを、演出担当として自由に語ってください（さらに良くするアイデアや、別の方向性の提案があれば添えてもかまいません）。そのあとに JSON を 1 つだけ ```json コードブロックで書いてください。';
+}
+
+export interface PromptOptions {
+  /** JSON の前に AI に自由に語ってもらうか */
+  talk: boolean;
+}
+
+export function buildInitialPrompt({ talk }: PromptOptions = { talk: true }): string {
   return `# AI Paste Effect 演出プランの作成依頼
 
 あなたはアニメ・漫画イラストの「撮影・演出担当」です。
@@ -84,7 +97,7 @@ export function buildInitialPrompt(): string {
 - 目安は 3〜6 ブロック、合計 4〜12 レイヤー。やりすぎず、絵の良さを引き立てる方向で。強い効果は opacity で加減してください。
 - 描き文字（soundText）・漫符（emotionMark）・フラッシュ（burst）などの漫画的リアクションは、要望や場面に合う時に使ってください。キャラの顔や体に重ならない位置に置きます。
 - 画像が添付されていない場合は、要望から一般的な構図を想定してください。
-- 返答は JSON を 1 つだけ \`\`\`json コードブロックで返してください。
+- ${replyFormat(talk, false)}
 
 ${specText()}
 ## 記入例
@@ -95,13 +108,13 @@ ${REQUEST_PLACEHOLDER}
 `;
 }
 
-export interface RevisionOptions {
+export interface RevisionOptions extends PromptOptions {
   currentPlan: unknown;
   warnings?: string[];
   includeSpec: boolean;
 }
 
-export function buildRevisionPrompt({ currentPlan, warnings = [], includeSpec }: RevisionOptions): string {
+export function buildRevisionPrompt({ currentPlan, warnings = [], includeSpec, talk }: RevisionOptions): string {
   const warn =
     warnings.length > 0
       ? `\n## アプリが出した警告（直せるものは直してください）\n${warnings.slice(0, 20).map((w) => `- ${w}`).join('\n')}\n`
@@ -111,7 +124,8 @@ export function buildRevisionPrompt({ currentPlan, warnings = [], includeSpec }:
 あなたが作った演出プラン JSON（下記）をアプリで画像に適用しました。
 結果画像を添付している場合は、それが現在の仕上がりです。
 下の【修正の要望】に合わせて、修正版の JSON を全体を省略せずに返してください。
-画像そのものは描き変えられないので、演出だけで調整してください。返答は JSON を 1 つだけ \`\`\`json コードブロックで。
+画像そのものは描き変えられないので、演出だけで調整してください。
+${replyFormat(talk, true)}
 ${warn}
 ## 現在の JSON
 ${jsonBlock(currentPlan)}

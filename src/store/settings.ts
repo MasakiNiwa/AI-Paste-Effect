@@ -18,6 +18,8 @@ export interface Settings {
   rememberJson: boolean;
   /** 元画像との比較方法 */
   compareMode: CompareMode;
+  /** AI に JSON の前に自由に語ってもらう */
+  aiTalk: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -28,6 +30,7 @@ export const DEFAULT_SETTINGS: Settings = {
   includeSpecInRevision: false,
   rememberJson: true,
   compareMode: 'hold',
+  aiTalk: true,
 };
 
 interface SettingsStore extends Settings {

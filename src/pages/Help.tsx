@@ -26,6 +26,7 @@ const CREDITS = [
   ['PixiJS', 'https://pixijs.com/', 'MIT License'],
   ['pixi-filters', 'https://github.com/pixijs/filters', 'MIT License'],
   ['Rough.js', 'https://roughjs.com/', 'MIT License'],
+  ['たまにエフェクト（TaMaNi-Effect）', 'https://github.com/MasakiNiwa/TaMaNi-Effect', 'MIT License'],
   ['Google Fonts（描き文字の書体）', 'https://fonts.google.com/', 'SIL Open Font License'],
 ] as const;
 
@@ -55,9 +56,21 @@ export default function Help() {
           </li>
           <li>修正の時は「キラキラを半分に」「顔は暗くしないで」など、<b>何をどうしたいか</b>を具体的に。</li>
           <li>結果画像を AI に添付すると、仕上がりを見ながら直してもらえます（スマホは「結果」タブの「共有」ボタンが便利）。</li>
-          <li>「ドーン!」などの描き文字や、汗・怒りマークなどの漫符も頼めます。</li>
+          <li>「ドーン!」などの描き文字や、汗・怒りマークなどの漫符、レンズフレアも頼めます。</li>
+          <li>AI は JSON と一緒に演出のねらいも語ってくれます（結果画面の「AI のコメント」）。気になった提案があれば、そのまま修正依頼で頼んでみてください。</li>
           <li>新しいチャットで修正を頼む時は、設定の「修正依頼にも仕様を含める」をオンにしてください。</li>
           <li>JSON が読めない時は、エラー内容ごと AI に伝えると直してもらえます。</li>
+        </ul>
+      </Section>
+
+      <Section title="アプリとしてインストール">
+        <p>
+          ホーム画面に追加すると、アプリのように全画面で使えます。一度開いたあとはオフラインでも起動できます（AI とのやりとりはネット接続が必要です）。
+        </p>
+        <ul className="list-disc space-y-1.5 pl-5">
+          <li>Android（Chrome）: 右上の「︙」メニュー →「アプリをインストール」または「ホーム画面に追加」</li>
+          <li>iPhone / iPad（Safari）: 共有ボタン →「ホーム画面に追加」</li>
+          <li>PC（Chrome / Edge）: アドレスバー右端のインストールアイコン</li>
         </ul>
       </Section>
 

@@ -12,6 +12,7 @@ import * as manga from './manga';
 import * as reaction from './reaction';
 import * as texture from './texture';
 import * as distortion from './distortion';
+import { TAMANI_EFFECTS } from './tamani';
 
 export type AnyEffect = EffectDefinition<any>;
 
@@ -23,6 +24,7 @@ export const EFFECTS: AnyEffect[] = [
   ...Object.values(reaction),
   ...Object.values(texture),
   ...Object.values(distortion),
+  ...TAMANI_EFFECTS,
 ] as EffectDefinition<ParamSchema>[] as AnyEffect[];
 
 const byId = new Map(EFFECTS.map((e) => [e.id.toLowerCase(), e]));

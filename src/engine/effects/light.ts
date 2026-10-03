@@ -1,4 +1,4 @@
-import { css } from '../color';
+import { css, parseColor } from '../color';
 import { p } from '../params';
 import { range } from '../random';
 import { defineEffect } from '../types';
@@ -211,6 +211,119 @@ export const lightSpot = defineEffect({
     grad.addColorStop(1, css(v.color, 0));
     g.fillStyle = grad;
     g.fillRect(0, 0, ctx.width, ctx.height);
+    return out;
+  },
+});
+
+const GHOST_TINTS = ['#8fd6ff', '#b69bff', '#8dffc2', '#ffd58f', '#ff9fbf'];
+
+export const lensFlare = defineEffect({
+  id: 'lensFlare',
+  label: 'レンズフレア',
+  category: 'light',
+  kind: 'overlay',
+  defaultBlend: 'screen',
+  description:
+    'カメラのレンズに光源が入った時のフレア。光源の芯・光条（スターバースト）・横に伸びる光の筋・光の輪・反対側に並ぶゴースト（丸い光）で構成。source を太陽やライトなどの光源位置に。夏・逆光・エモい青春・SF に。',
+  params: {
+    source: p.point(0.8, 0.18, '光源の位置'),
+    size: p.num(0.03, 1, 0.22, '光源の芯の大きさ（短辺比）'),
+    intensity: p.num(0, 1, 0.85, '全体の強さ'),
+    color: p.color('#ffe6bf', '光の色'),
+    rays: p.num(0, 1, 0.5, '光条（放射状の細い光）の強さ'),
+    streak: p.num(0, 1, 0.5, '横に伸びる光の筋（アナモルフィック）の強さ'),
+    streakAngle: p.num(-90, 90, 0, '光の筋の角度（度）'),
+    halo: p.num(0, 1, 0.4, '光源を囲む光の輪の強さ'),
+    ghosts: p.int(0, 12, 5, 'ゴースト（光源の反対側に並ぶ丸い光）の数'),
+  },
+  render(ctx, v) {
+    const out = ctx.createCanvas();
+    const g = ctx2d(out);
+    const { width: W, height: H, short } = ctx;
+    const sx = v.source.x * W;
+    const sy = v.source.y * H;
+    const R = v.size * short;
+    const I = v.intensity;
+    g.globalCompositeOperation = 'lighter';
+
+    const blob = (x: number, y: number, r: number, c: typeof v.color, a: number, inner = 0) => {
+      const grad = g.createRadialGradient(x, y, 0, x, y, Math.max(1, r));
+      grad.addColorStop(0, css(c, inner ? a * 0.2 : a));
+      if (inner) grad.addColorStop(inner, css(c, a));
+      grad.addColorStop(1, css(c, 0));
+      g.fillStyle = grad;
+      g.beginPath();
+      g.arc(x, y, Math.max(1, r), 0, Math.PI * 2);
+      g.fill();
+    };
+
+    // 芯（白に近い中心 + 色のにじみ）
+    blob(sx, sy, R * 2.2, v.color, 0.55 * I);
+    blob(sx, sy, R * 0.55, { r: 255, g: 255, b: 255, a: 1 }, I);
+
+    // 光条
+    if (v.rays > 0) {
+      const n = 14 + Math.floor(ctx.rng() * 10);
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * Math.PI * 2 + range(ctx.rng, -0.1, 0.1);
+        const len = R * range(ctx.rng, 1.5, 4.5);
+        const w = R * range(ctx.rng, 0.015, 0.04);
+        const grad = g.createLinearGradient(sx, sy, sx + Math.cos(a) * len, sy + Math.sin(a) * len);
+        grad.addColorStop(0, css(v.color, v.rays * I * 0.9));
+        grad.addColorStop(1, css(v.color, 0));
+        g.fillStyle = grad;
+        g.beginPath();
+        g.moveTo(sx - Math.sin(a) * w, sy + Math.cos(a) * w);
+        g.lineTo(sx + Math.cos(a) * len, sy + Math.sin(a) * len);
+        g.lineTo(sx + Math.sin(a) * w, sy - Math.cos(a) * w);
+        g.closePath();
+        g.fill();
+      }
+    }
+
+    // 横に伸びる光の筋
+    if (v.streak > 0) {
+      g.save();
+      g.translate(sx, sy);
+      g.rotate((v.streakAngle * Math.PI) / 180);
+      g.scale(1, 0.025);
+      const len = Math.max(W, H) * 0.9;
+      const grad = g.createRadialGradient(0, 0, 0, 0, 0, len);
+      grad.addColorStop(0, css({ r: 255, g: 255, b: 255, a: 1 }, v.streak * I));
+      grad.addColorStop(0.15, css(v.color, v.streak * I * 0.6));
+      grad.addColorStop(1, css(v.color, 0));
+      g.fillStyle = grad;
+      g.beginPath();
+      g.arc(0, 0, len, 0, Math.PI * 2);
+      g.fill();
+      g.restore();
+    }
+
+    // 光の輪
+    if (v.halo > 0) {
+      const r = R * 3.2;
+      const grad = g.createRadialGradient(sx, sy, r * 0.82, sx, sy, r);
+      grad.addColorStop(0, css(v.color, 0));
+      grad.addColorStop(0.55, css({ r: 170, g: 210, b: 255, a: 1 }, v.halo * I * 0.25));
+      grad.addColorStop(0.8, css(v.color, v.halo * I * 0.3));
+      grad.addColorStop(1, css(v.color, 0));
+      g.fillStyle = grad;
+      g.beginPath();
+      g.arc(sx, sy, r, 0, Math.PI * 2);
+      g.fill();
+    }
+
+    // ゴースト: 光源と画面中心を結ぶ線上、中心の反対側に並ぶ
+    const cx = W / 2;
+    const cy = H / 2;
+    for (let i = 0; i < v.ghosts; i++) {
+      const k = range(ctx.rng, -1.3, 0.6);
+      const x = cx + (sx - cx) * k;
+      const y = cy + (sy - cy) * k;
+      const r = R * range(ctx.rng, 0.15, 1.1);
+      const tint = parseColor(GHOST_TINTS[Math.floor(ctx.rng() * GHOST_TINTS.length)])!;
+      blob(x, y, r, tint, I * range(ctx.rng, 0.12, 0.3), ctx.rng() < 0.5 ? 0.85 : 0);
+    }
     return out;
   },
 });

@@ -125,6 +125,9 @@ export default function Settings() {
       <Card>
         <h2 className="mb-3 text-xs font-bold tracking-wider text-muted">AI とのやりとり</h2>
         <div className="divide-y divide-line">
+          <Row title="AI に自由に語ってもらう" desc="オンだと、AI が感想や演出のねらいを話してから JSON を返します。オフだと JSON だけを返します。">
+            <Toggle label="AI に自由に語ってもらう" checked={s.aiTalk} onChange={(aiTalk) => s.set({ aiTalk })} />
+          </Row>
           <Row
             title="修正依頼にも仕様を含める"
             desc="新しいチャットで修正を頼む時はオンに。同じチャットで続けるならオフの方が短く済みます。"

@@ -20,7 +20,9 @@
 ## 特徴
 
 - エフェクトの選択や数値調整の UI はありません。演出の設計はすべて AI に任せます
-- 色調・光・粒子・漫画表現・リアクション/描き文字・質感・ぼかし/歪みの 41 種類のエフェクト
+- 色調・光・粒子・漫画表現・リアクション/描き文字・質感・ぼかし/歪み・たまにエフェクトの 52 種類のエフェクト
+- AI は演出のねらいを自由に語ったうえで JSON を返し、その語りはアプリ内に「AI のコメント」として表示
+- PWA 対応（ホーム画面に追加してアプリとして使える／オフライン起動）
 - 多層構造の JSON（plan → blocks → layers）と、座標ベースの領域マスク・顔の保護領域
 - AI の返答の揺れ（コードフェンス、前後の文章、末尾カンマ、範囲外の値、未知のキー）を寛容に解釈し、警告は修正依頼に自動で添付
 
@@ -33,7 +35,9 @@ npm test          # ユニットテスト（Vitest）
 npm run build     # 型チェック + 本番ビルド（dist/）
 ```
 
-技術スタック: Vite / React / TypeScript / Tailwind CSS / Zustand / PixiJS + pixi-filters / Rough.js / Google Fonts / JSON5
+技術スタック: Vite / React / TypeScript / Tailwind CSS / Zustand / PixiJS + pixi-filters / Rough.js / Google Fonts / JSON5 / vite-plugin-pwa
+
+`src/vendor/tamani-effect/` には [TaMaNi-Effect](https://github.com/MasakiNiwa/TaMaNi-Effect)（MIT License）のエフェクトを取り込んでいます。
 
 仕様と設計は [docs/SPEC.md](docs/SPEC.md) を参照してください。
 
