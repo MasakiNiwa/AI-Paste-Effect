@@ -5,7 +5,7 @@ import type { Filter } from 'pixi.js';
 import { css } from '../color';
 import { p } from '../params';
 import { defineEffect } from '../types';
-import { ctx2d } from './util';
+import { ctx2d, rgb, tryGpu } from './util';
 
 const smooth = (e0: number, e1: number, x: number) => {
   const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0)));
@@ -35,6 +35,76 @@ export const photoLook = defineEffect({
   async render(ctx, v) {
     const { width: W, height: H, short } = ctx;
     const { KawaseBlurFilter } = await ctx.filters();
+    const haloBlur = (c: HTMLCanvasElement) =>
+      ctx.applyFilters([new KawaseBlurFilter({ strength: Math.max(2, short * 0.012), quality: 6, clamp: true })], c);
+    const sharpBlur = () => ctx.applyFilters([new KawaseBlurFilter({ strength: Math.max(1, short / 900), quality: 2, clamp: true })]);
+
+    const done = await tryGpu(ctx, async (gpu) => {
+      const haloC =
+        v.halation > 0
+          ? await haloBlur(
+              gpu.run({
+                width: W,
+                height: H,
+                textures: { uSrc: ctx.source },
+                uniforms: { uColor: rgb(v.halationColor) },
+                fragment: `
+uniform sampler2D uSrc;
+uniform vec3 uColor;
+void main() { outColor = vec4(uColor * sstep(0.62, 0.95, luma(texture(uSrc, vUv).rgb)), 1.0); }`,
+              }),
+            )
+          : ctx.source;
+      const softC = v.sharpen > 0 ? await sharpBlur() : ctx.source;
+      return gpu.run({
+        width: W,
+        height: H,
+        textures: { uSrc: ctx.source, uHalo: haloC, uSoft: softC },
+        uniforms: {
+          uAb: v.aberration * short,
+          uSharpen: v.sharpen,
+          uContrast: v.contrast,
+          uLift: v.fade * 0.14,
+          uWarm: v.warmth,
+          uHalation: v.halation,
+          uVignette: v.vignette,
+          uGrain: v.grain,
+          uChroma: v.chroma,
+          uSeed: ctx.rng() * 1000,
+        },
+        fragment: `
+uniform sampler2D uSrc, uHalo, uSoft;
+uniform float uAb, uSharpen, uContrast, uLift, uWarm, uHalation, uVignette, uGrain, uChroma, uSeed;
+void main() {
+  vec2 p = vUv * uSize;
+  vec2 c = uSize * 0.5;
+  vec2 d = p - c;
+  float maxR = length(c);
+  float rn = length(d) / maxR;
+  vec4 s = texture(uSrc, vUv);
+  // 色収差: 中心から外へ、R と B を逆向きにずらす
+  float k = uAb * rn * rn;
+  vec2 u = rn > 0.0 ? d / (rn * maxR) : vec2(0.0);
+  vec3 col = vec3(k > 0.3 ? texture(uSrc, (p + u * k) / uSize).r : s.r, s.g, k > 0.3 ? texture(uSrc, (p - u * k) / uSize).b : s.b);
+  col += (col - texture(uSoft, vUv).rgb) * uSharpen * 1.5;
+  col += (smoothstep(0.0, 1.0, col) - col) * uContrast;
+  col = vec3(
+    uLift + col.r * (1.0 - uLift * 1.3) * (1.0 + uWarm * 0.07),
+    uLift + col.g * (1.0 - uLift * 1.3),
+    uLift * 1.15 + col.b * (1.0 - uLift * 1.3) * (1.0 - uWarm * 0.07));
+  col = 1.0 - (1.0 - col) * (1.0 - texture(uHalo, vUv).rgb * uHalation);
+  col *= 1.0 - uVignette * 0.75 * pow(rn, 2.4);
+  if (uGrain > 0.0) {
+    float amp = uGrain * 0.11 * (1.25 - min(1.0, dot(col, vec3(0.3, 0.59, 0.11))) * 0.85);
+    vec2 q = p + uSeed;
+    float n = (hash(q) + hash(q + 17.3) - 1.0) * amp;
+    col += n + (vec3(hash(q + 3.1), hash(q + 5.7), hash(q + 9.2)) - 0.5) * amp * uChroma * vec3(1.0, 0.7, 1.2);
+  }
+  outColor = vec4(clamp(col, 0.0, 1.0), s.a);
+}`,
+      });
+    });
+    if (done) return done;
 
     // ハレーション: 明部だけを取り出して色を付け、大きくぼかす
     let halo: Uint8ClampedArray | null = null;
@@ -54,17 +124,14 @@ export const photoLook = defineEffect({
         d[i + 3] = 255;
       }
       bg.putImageData(img, 0, 0);
-      const blurred = await ctx.applyFilters(
-        [new KawaseBlurFilter({ strength: Math.max(2, short * 0.012), quality: 6, clamp: true })],
-        bright,
-      );
+      const blurred = await haloBlur(bright);
       halo = ctx2d(blurred).getImageData(0, 0, W, H).data;
     }
 
     // シャープネス用の少しぼかした画像
     let soft: Uint8ClampedArray | null = null;
     if (v.sharpen > 0) {
-      const b = await ctx.applyFilters([new KawaseBlurFilter({ strength: Math.max(1, short / 900), quality: 2, clamp: true })]);
+      const b = await sharpBlur();
       soft = ctx2d(b).getImageData(0, 0, W, H).data;
     }
 

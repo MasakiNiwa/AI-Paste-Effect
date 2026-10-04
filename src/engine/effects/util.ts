@@ -1,3 +1,4 @@
+import type { Gpu } from '../gpu';
 import type { EffectContext } from '../types';
 
 export function ctx2d(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
@@ -38,3 +39,44 @@ export function withAlpha(ctx: EffectContext, canvas: HTMLCanvasElement, alpha: 
   g.drawImage(canvas, 0, 0);
   return out;
 }
+
+/**
+ * GPU モードなら GPU 版の処理を試し、その結果を返す。CPU モード・GPU 非対応・失敗した時は null
+ * （呼び出し側はそのまま CPU 版の処理に進む）。同じ見た目になるよう、両方とも同じ計算で書くこと。
+ *
+ *   const done = await tryGpu(ctx, (gpu) => gpu.run({ ... }));
+ *   if (done) return done;
+ *   // ↓ CPU 版
+ */
+export async function tryGpu<T>(ctx: EffectContext, onGpu: (gpu: Gpu) => T | Promise<T>): Promise<T | null> {
+  if (!ctx.gpu) return null;
+  try {
+    return await onGpu(ctx.gpu);
+  } catch (e) {
+    console.warn('GPU での処理に失敗したため CPU で処理します', e);
+    return null;
+  }
+}
+
+/** RGBA（0〜255）を GPU に渡す 0〜1 の配列にする */
+export const rgb = (c: { r: number; g: number; b: number }): number[] => [c.r / 255, c.g / 255, c.b / 255];
+
+/** 色の配列を GPU のグラデーション用 uniform（uColors[6] / uCount）にする。GLSL は GLSL_STOPS を使う */
+export function stopsUniforms(colors: { r: number; g: number; b: number }[]): Record<string, number | number[]> {
+  const list = colors.slice(0, 6);
+  const flat = list.flatMap(rgb);
+  while (flat.length < 18) flat.push(0);
+  return { uColors: flat, uCount: list.length };
+}
+
+/** sampleStops（color.ts）の GPU 版 */
+export const GLSL_STOPS = `
+uniform vec3 uColors[6];
+uniform int uCount;
+vec3 stops(float t) {
+  if (uCount <= 1) return uColors[0];
+  float x = clamp(t, 0.0, 1.0) * float(uCount - 1);
+  int i = min(uCount - 2, int(floor(x)));
+  return mix(uColors[i], uColors[i + 1], x - float(i));
+}
+`;

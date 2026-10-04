@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { compilePlan, parseReply, type ParseResult, type ReplyResult } from '../engine/plan';
 import { fitImage, renderPlan } from '../engine/renderer';
 import { setPreferredPack } from '../engine/assets';
+import { setGpuMode } from '../engine/gpu';
 import { canvasToDecodedUrl, loadImageFile } from '../lib/image';
 import { useOutput, type Picture } from '../store/output';
 import { useSession } from '../store/session';
@@ -63,6 +64,8 @@ export function usePipeline() {
   const strength = useSession((s) => s.strength);
   const assetPack = useSettings((s) => s.assetPack);
   setPreferredPack(assetPack);
+  const processing = useSettings((s) => s.processing);
+  setGpuMode(processing);
   const original = useOutput((s) => s.original);
   const out = useOutput((s) => s.set);
 
@@ -97,18 +100,18 @@ export function usePipeline() {
     out({ rendering: true });
     const timer = setTimeout(() => {
       renderPlan(original.canvas, parsed.plan!, strength)
-        .then(async ({ canvas, errors }) => {
+        .then(async ({ canvas, errors, ms, usedGpu }) => {
           if (id !== renderId.current) return;
           // デコードし終えてから差し替える（白いチラつき防止）
           const url = await canvasToDecodedUrl(canvas);
           if (id !== renderId.current) return URL.revokeObjectURL(url);
-          out({ result: swap(useOutput.getState().result, { canvas, url }), renderErrors: errors, unseen: true });
+          out({ result: swap(useOutput.getState().result, { canvas, url }), renderErrors: errors, unseen: true, renderInfo: { ms, usedGpu } });
         })
         .catch((e: Error) => id === renderId.current && out({ renderErrors: [e.message] }))
         .finally(() => id === renderId.current && out({ rendering: false }));
     }, 250);
     return () => clearTimeout(timer);
-  }, [original, parsed, strength, assetPack, out]);
+  }, [original, parsed, strength, assetPack, processing, out]);
 
   // 複数案のサムネイル（小さく描いて切り替え用に並べる）
   const thumbId = useRef(0);
@@ -134,5 +137,5 @@ export function usePipeline() {
         }
       }
     })();
-  }, [original, reply, assetPack, out]);
+  }, [original, reply, assetPack, processing, out]);
 }

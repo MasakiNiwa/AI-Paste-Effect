@@ -5,15 +5,15 @@ import { css, sampleStops, type RGBA } from '../color';
 import { p } from '../params';
 import type { Rng } from '../random';
 import { defineEffect, type EffectContext } from '../types';
-import { ctx2d } from './util';
+import { GLSL_STOPS, ctx2d, rgb, stopsUniforms, tryGpu } from './util';
 
 const smooth = (e0: number, e1: number, x: number) => {
   const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0)));
   return t * t * (3 - 2 * t);
 };
 
-/** なめらかなノイズ（低解像度の乱数を拡大）。cells は短辺あたりのムラの数 */
-function smoothNoise(ctx: EffectContext, rng: Rng, cells: number): Float32Array {
+/** 乱数の小さな画像（cells は短辺あたりのムラの数）。拡大して使うとなめらかなノイズになる */
+function noiseCanvas(ctx: EffectContext, rng: Rng, cells: number): HTMLCanvasElement {
   const { width: W, height: H, short } = ctx;
   const w = Math.max(2, Math.round((W / short) * cells));
   const h = Math.max(2, Math.round((H / short) * cells));
@@ -26,21 +26,30 @@ function smoothNoise(ctx: EffectContext, rng: Rng, cells: number): Float32Array 
     img.data[i + 3] = 255;
   }
   sg.putImageData(img, 0, 0);
+  return small;
+}
+
+/** なめらかなノイズ（noiseCanvas を画像サイズに拡大して、0〜1 の値で返す） */
+function smoothNoise(ctx: EffectContext, rng: Rng, cells: number): Float32Array {
+  const { width: W, height: H } = ctx;
   const big = ctx.createCanvas();
   const bg = ctx2d(big);
   bg.imageSmoothingEnabled = true;
   bg.imageSmoothingQuality = 'high';
-  bg.drawImage(small, 0, 0, W, H);
+  bg.drawImage(noiseCanvas(ctx, rng, cells), 0, 0, W, H);
   const d = bg.getImageData(0, 0, W, H).data;
   const out = new Float32Array(W * H);
   for (let i = 0; i < out.length; i++) out[i] = d[i * 4] / 255;
   return out;
 }
 
-async function blurCanvas(ctx: EffectContext, input: HTMLCanvasElement, radiusPx: number): Promise<Uint8ClampedArray> {
+async function blurToCanvas(ctx: EffectContext, input: HTMLCanvasElement, radiusPx: number): Promise<HTMLCanvasElement> {
   const { KawaseBlurFilter } = await ctx.filters();
-  const b = await ctx.applyFilters([new KawaseBlurFilter({ strength: Math.max(1, radiusPx / 2), quality: 6, clamp: true })], input);
-  return ctx2d(b).getImageData(0, 0, ctx.width, ctx.height).data;
+  return ctx.applyFilters([new KawaseBlurFilter({ strength: Math.max(1, radiusPx / 2), quality: 6, clamp: true })], input);
+}
+
+async function blurCanvas(ctx: EffectContext, input: HTMLCanvasElement, radiusPx: number): Promise<Uint8ClampedArray> {
+  return ctx2d(await blurToCanvas(ctx, input, radiusPx)).getImageData(0, 0, ctx.width, ctx.height).data;
 }
 
 const lum = (d: Uint8ClampedArray, i: number) => (d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114) / 255;
@@ -64,6 +73,65 @@ export const inkBleed = defineEffect({
   },
   async render(ctx, v) {
     const { width: W, height: H, short } = ctx;
+    const STYLE = { ink: 0, watercolor: 1, oil: 2, colorful: 3 } as const;
+    const done = await tryGpu(ctx, async (gpu) => {
+      // 計算の順番（乱数の使い方）は CPU 版と同じ
+      const seed = gpu.run({
+        width: W,
+        height: H,
+        textures: { uSrc: ctx.source },
+        uniforms: { uTh: v.threshold, uWater: v.style === 'watercolor' ? 1 : 0 },
+        fragment: `
+uniform sampler2D uSrc;
+uniform float uTh, uWater;
+void main() {
+  vec3 c = texture(uSrc, vUv).rgb;
+  float a = sstep(uTh, uTh - 0.25, luma(c));
+  if (uWater > 0.5) a = max(a, sstep(0.25, 0.7, max(c.r, max(c.g, c.b)) - min(c.r, min(c.g, c.b))) * 0.8);
+  outColor = vec4(1.0, 1.0, 1.0, a);
+}`,
+      });
+      const spreadPx = v.spread * short;
+      const blurred = await blurToCanvas(ctx, seed, spreadPx);
+      const wide = v.style === 'oil' ? await blurToCanvas(ctx, seed, spreadPx * 2.2) : seed;
+      const colorBlur = v.style === 'watercolor' ? await blurToCanvas(ctx, ctx.source, spreadPx * 0.8) : seed;
+      const noise = noiseCanvas(ctx, ctx.rng, Math.max(6, 0.25 / v.spread));
+      const hueNoise = v.style === 'colorful' ? noiseCanvas(ctx, ctx.rng, 3) : noise;
+      return gpu.run({
+        width: W,
+        height: H,
+        textures: { uSeed: seed, uBlur: blurred, uWide: wide, uColorBlur: colorBlur, uNoise: noise, uHue: hueNoise },
+        uniforms: { uStyle: STYLE[v.style], uRough: v.roughness, uAmount: v.amount, uInk: rgb(v.color), ...stopsUniforms(v.colors) },
+        fragment: `${GLSL_STOPS}
+uniform sampler2D uSeed, uBlur, uWide, uColorBlur, uNoise, uHue;
+uniform int uStyle;
+uniform float uRough, uAmount;
+uniform vec3 uInk;
+void main() {
+  float b = texture(uBlur, vUv).a;
+  float core = texture(uSeed, vUv).a;
+  float edgeT = 0.12 + (texture(uNoise, vUv).r - 0.5) * uRough * 0.35;
+  float a = sstep(edgeT, edgeT + 0.12, b);
+  float rim = a * (1.0 - sstep(edgeT + 0.12, edgeT + 0.45, b));
+  float wash = sstep(edgeT * 0.15, edgeT * 0.9, b) * (uStyle == 1 ? 0.75 : 0.3);
+  a = max(max(core * 0.6, a * (0.55 + rim * 0.9)), wash);
+  vec3 c = uInk;
+  if (uStyle == 3) c = stops(texture(uHue, vUv).r);
+  else if (uStyle == 1) {
+    vec3 cb = texture(uColorBlur, vUv).rgb;
+    float m = (cb.r + cb.g + cb.b) / 3.0;
+    c = max(vec3(0.0), m + (cb - m) * 1.6 - 10.0 / 255.0);
+  } else if (uStyle == 2) {
+    float halo = sstep(0.04, 0.2, texture(uWide, vUv).a) * (1.0 - a);
+    c = mix(vec3(205.0, 168.0, 92.0) / 255.0, uInk, a / max(0.001, a + halo * 0.5));
+    a = max(a, halo * 0.45);
+  }
+  outColor = vec4(c, min(1.0, a * uAmount));
+}`,
+      });
+    });
+    if (done) return done;
+
     const src = ctx2d(ctx.source).getImageData(0, 0, W, H).data;
     const n = W * H;
 
@@ -153,6 +221,38 @@ export const watercolor = defineEffect({
   },
   async render(ctx, v) {
     const { width: W, height: H, short } = ctx;
+    const done = await tryGpu(ctx, async (gpu) =>
+      gpu.run({
+        width: W,
+        height: H,
+        textures: {
+          uSrc: ctx.source,
+          uSoft: await blurToCanvas(ctx, ctx.source, Math.max(1, v.softness * short)),
+          uSofter: await blurToCanvas(ctx, ctx.source, Math.max(2, v.softness * short * 3 + short * 0.004)),
+          uBlooms: noiseCanvas(ctx, ctx.rng, 5),
+          uFine: noiseCanvas(ctx, ctx.rng, 55),
+        },
+        uniforms: { uBloom: v.bloom, uEdge: v.edgeDarken, uGran: v.granulation, uKeep: v.keepLines, uPaper: rgb(v.paper) },
+        fragment: `
+uniform sampler2D uSrc, uSoft, uSofter, uBlooms, uFine;
+uniform float uBloom, uEdge, uGran, uKeep;
+uniform vec3 uPaper;
+void main() {
+  vec4 s = texture(uSrc, vUv);
+  vec3 so = texture(uSoft, vUv).rgb;
+  vec3 sr = texture(uSofter, vUv).rgb;
+  float edge = min(1.0, dot(abs(so - sr), vec3(1.0)) * 255.0 / 120.0);
+  float base = 1.0 - luma(so);
+  float grain = (texture(uFine, vUv).r - 0.5) * uGran * 0.6 * min(1.0, base * (1.0 - base) * 4.0);
+  float density = (1.0 + (texture(uBlooms, vUv).r - 0.5) * uBloom * 0.9) * (1.0 + edge * uEdge * 0.8) * (1.0 + grain);
+  float line = sstep(0.45, 0.15, luma(s.rgb)) * uKeep;
+  vec3 val = uPaper * (1.0 - clamp((1.0 - so) * density, 0.0, 1.0));
+  val *= 1.0 - line * (1.0 - s.rgb);
+  outColor = vec4(val, s.a);
+}`,
+      }),
+    );
+    if (done) return done;
     const n = W * H;
     const src = ctx2d(ctx.source).getImageData(0, 0, W, H).data;
     const soft = await blurCanvas(ctx, ctx.source, Math.max(1, v.softness * short));
@@ -244,8 +344,65 @@ export const oilPaint = defineEffect({
     impasto: p.num(0, 1, 0.45, '絵の具の盛り上がり（陰影）'),
     saturation: p.num(0, 1, 0.2, '色の鮮やかさを足す'),
   },
-  render(ctx, v) {
+  async render(ctx, v) {
     const { width: W, height: H, short } = ctx;
+    // GPU では元の解像度のまま計算する。大きな筆は、間引いた位置を縮小版（ミップマップ）から読んで平均を近似する
+    const done = await tryGpu(ctx, (gpu) => {
+      const r = Math.max(1, v.brush * short);
+      const step = Math.max(1, r / 8);
+      const k = gpu.run({
+        width: W,
+        height: H,
+        textures: { uSrc: ctx.source },
+        uniforms: { uR: r, uStep: step, uLod: Math.max(0, Math.log2(step) - 0.3) },
+        fragment: `
+uniform sampler2D uSrc;
+uniform float uR, uStep, uLod;
+void main() {
+  int n = int(ceil(uR / uStep));
+  float best = 1e9;
+  vec3 bestM = vec3(0.0);
+  for (int q = 0; q < 4; q++) {
+    vec2 dir = vec2((q & 1) == 1 ? 1.0 : -1.0, (q & 2) == 2 ? 1.0 : -1.0) * uStep / uSize;
+    vec3 sum = vec3(0.0);
+    float sl = 0.0, sq = 0.0, cnt = 0.0;
+    for (int j = 0; j <= 8; j++) {
+      if (j > n) break;
+      for (int i = 0; i <= 8; i++) {
+        if (i > n) break;
+        vec3 c = textureLod(uSrc, vUv + dir * vec2(float(i), float(j)), uLod).rgb;
+        float l = luma(c);
+        sum += c; sl += l; sq += l * l; cnt += 1.0;
+      }
+    }
+    float m = sl / cnt;
+    float vr = sq / cnt - m * m;
+    if (vr < best) { best = vr; bestM = sum / cnt; }
+  }
+  outColor = vec4(bestM, texture(uSrc, vUv).a);
+}`,
+      });
+      return gpu.run({
+        width: W,
+        height: H,
+        textures: { uK: k },
+        // 陰影の細かさを CPU 版（長辺 1200px で計算）に合わせる
+        uniforms: { uD: Math.max(1, Math.max(W, H) / 1200), uImp: v.impasto, uSat: v.saturation },
+        fragment: `
+uniform sampler2D uK;
+uniform float uD, uImp, uSat;
+void main() {
+  vec4 k = texture(uK, vUv);
+  float lc = k.r + k.g + k.b;
+  float lL = dot(texture(uK, vUv - vec2(uD, 0.0) / uSize).rgb, vec3(1.0));
+  float lU = dot(texture(uK, vUv - vec2(0.0, uD) / uSize).rgb, vec3(1.0));
+  float shade = (2.0 * lc - lL - lU) / 3.0;
+  float m = lc / 3.0;
+  outColor = vec4(clamp(m + (k.rgb - m) * (1.0 + uSat) + shade * uImp * 180.0 / 255.0, 0.0, 1.0), k.a);
+}`,
+      });
+    });
+    if (done) return done;
     // 重い処理なので、長辺 1200px 程度で計算して拡大する（筆の跡なので細部は不要）
     const scale = Math.min(1, 1200 / Math.max(W, H));
     const w = Math.max(8, Math.round(W * scale));

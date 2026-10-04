@@ -17,6 +17,8 @@ interface OutputStore {
   unseen: boolean;
   /** 複数案のサムネイル（案の番号 → 表示用 URL） */
   thumbs: Record<number, string>;
+  /** 最後の描画にかかった時間と、GPU を使ったか */
+  renderInfo: { ms: number; usedGpu: boolean } | null;
   set: (patch: Partial<Omit<OutputStore, 'set'>>) => void;
 }
 
@@ -28,5 +30,6 @@ export const useOutput = create<OutputStore>((set) => ({
   imageError: null,
   unseen: false,
   thumbs: {},
+  renderInfo: null,
   set: (patch) => set(patch),
 }));

@@ -1,7 +1,7 @@
 import { css, sampleStops } from '../color';
 import { p } from '../params';
 import { defineEffect } from '../types';
-import { ctx2d } from './util';
+import { GLSL_STOPS, ctx2d, stopsUniforms, tryGpu } from './util';
 
 export const colorAdjust = defineEffect({
   id: 'colorAdjust',
@@ -56,7 +56,23 @@ export const gradientMap = defineEffect({
   params: {
     colors: p.colors(['#1d1b3a', '#c86b98', '#ffe6c7'], '暗部→明部の色', 2, 6),
   },
-  render(ctx, v) {
+  async render(ctx, v) {
+    const done = await tryGpu(ctx, (gpu) =>
+      gpu.run({
+        width: ctx.width,
+        height: ctx.height,
+        textures: { uSrc: ctx.source },
+        uniforms: stopsUniforms(v.colors),
+        fragment: `${GLSL_STOPS}
+uniform sampler2D uSrc;
+void main() {
+  vec4 c = texture(uSrc, vUv);
+  // CPU 版と同じく 256 段階に丸めてから色を引く
+  outColor = vec4(stops(floor(luma(c.rgb) * 255.0 + 0.5) / 255.0), c.a);
+}`,
+      }),
+    );
+    if (done) return done;
     const out = ctx.createCanvas();
     const g = ctx2d(out);
     g.drawImage(ctx.source, 0, 0);
@@ -175,7 +191,25 @@ export const posterize = defineEffect({
   params: {
     levels: p.int(2, 16, 4, '明るさの階調数'),
   },
-  render(ctx, v) {
+  async render(ctx, v) {
+    const done = await tryGpu(ctx, (gpu) =>
+      gpu.run({
+        width: ctx.width,
+        height: ctx.height,
+        textures: { uSrc: ctx.source },
+        uniforms: { uN: v.levels - 1 },
+        fragment: `
+uniform sampler2D uSrc;
+uniform float uN;
+void main() {
+  vec4 c = texture(uSrc, vUv);
+  float l = luma(c.rgb);
+  if (l > 0.0) c.rgb = min(vec3(1.0), c.rgb * (max(0.5 / uN, floor(l * uN + 0.5) / uN) / l));
+  outColor = c;
+}`,
+      }),
+    );
+    if (done) return done;
     const out = ctx.createCanvas();
     const g = ctx2d(out);
     g.drawImage(ctx.source, 0, 0);

@@ -2,7 +2,7 @@ import { css } from '../color';
 import { p } from '../params';
 import { range } from '../random';
 import { defineEffect } from '../types';
-import { ctx2d } from './util';
+import { ctx2d, rgb, tryGpu } from './util';
 
 export const focusLines = defineEffect({
   id: 'focusLines',
@@ -212,8 +212,29 @@ export const inkLines = defineEffect({
     strength: p.num(0, 3, 1.2, '線の濃さ'),
     color: p.color('#1a1a1a', '線の色'),
   },
-  render(ctx, v) {
+  async render(ctx, v) {
     const { width: W, height: H } = ctx;
+    const done = await tryGpu(ctx, (gpu) =>
+      gpu.run({
+        width: W,
+        height: H,
+        textures: { uSrc: ctx.source },
+        uniforms: { uThreshold: v.threshold, uStrength: v.strength, uColor: [...rgb(v.color), v.color.a] },
+        fragment: `
+uniform sampler2D uSrc;
+uniform float uThreshold, uStrength;
+uniform vec4 uColor;
+float L(float x, float y) { return luma(texture(uSrc, vUv + vec2(x, y) / uSize).rgb); }
+void main() {
+  // Sobel（y は下向き）
+  float gx = L(1.0, -1.0) + 2.0 * L(1.0, 0.0) + L(1.0, 1.0) - L(-1.0, -1.0) - 2.0 * L(-1.0, 0.0) - L(-1.0, 1.0);
+  float gy = L(-1.0, 1.0) + 2.0 * L(0.0, 1.0) + L(1.0, 1.0) - L(-1.0, -1.0) - 2.0 * L(0.0, -1.0) - L(1.0, -1.0);
+  float a = clamp((length(vec2(gx, gy)) - uThreshold) * uStrength * 2.0, 0.0, 1.0);
+  outColor = vec4(uColor.rgb, a * uColor.a);
+}`,
+      }),
+    );
+    if (done) return done;
     const src = ctx2d(ctx.source).getImageData(0, 0, W, H).data;
     const lum = new Float32Array(W * H);
     for (let i = 0; i < W * H; i++) lum[i] = (src[i * 4] * 0.299 + src[i * 4 + 1] * 0.587 + src[i * 4 + 2] * 0.114) / 255;
