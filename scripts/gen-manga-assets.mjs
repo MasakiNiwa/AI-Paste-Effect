@@ -186,8 +186,8 @@ const ASSETS = [
   { id: 'gloom/rainCloud', label: '頭上の小さな雨雲（しょんぼり）', tags: ['gloom', 'sad'], colors: ['#5d6678', '#7fa6d8'], size: 0.25,
     draw: () => outlined(puffy(100, 70, 72, 38, 7, 0.22), C1, '#3d4452', 4) +
       Array.from({ length: 6 }, (_, i) => fill(brush([48 + i * 21, 122], [40 + i * 21 + J(3), 178 + J(10)], 6), C2)).join('') },
-  { id: 'gloom/blueLines', label: '青い縦線の「ガーン」背景（上から垂れる）', tags: ['gloom', 'shock'], colors: ['#25305a', '#25305a'], size: 0.6,
-    draw: () => `<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="200" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${C1}" stop-opacity="1"/><stop offset="1" stop-color="${C1}" stop-opacity="0"/></linearGradient></defs>` +
+  { id: 'gloom/blueLines', label: '青い縦線の「ガーン」背景（キャラの頭上〜背景に幅広く大きく置く。上下の端は自然に消える）', tags: ['gloom', 'shock'], colors: ['#25305a', '#25305a'], size: 0.6,
+    draw: () => `<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="200" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${C1}" stop-opacity="0"/><stop offset="0.22" stop-color="${C1}" stop-opacity="1"/><stop offset="0.5" stop-color="${C1}" stop-opacity="0.85"/><stop offset="1" stop-color="${C1}" stop-opacity="0"/></linearGradient></defs>` +
       Array.from({ length: 34 }, (_, i) => fill(brush([3 + i * 5.8 + J(1.5), 0], [3 + i * 5.8 + J(2), 120 + J(70)], 2.6 + J(1), 0, 0.01, 1), 'url(#g)')).join('') },
 
   // コミカル

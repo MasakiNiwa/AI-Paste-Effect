@@ -39,6 +39,8 @@ export interface RenderLayer {
 export interface CompiledPlan {
   title?: string;
   intent?: string;
+  /** 演出全体の強さ（1 = JSON どおり。0 で元画像、2 で各レイヤーを最大まで強める） */
+  intensity: number;
   layers: RenderLayer[];
 }
 
@@ -215,6 +217,27 @@ export function parseReply(text: string): ReplyResult {
 }
 
 /** 1 案目だけを解析する（単一案として扱う場合） */
+export const INTENSITY_WORDS = { subtle: 0.45, medium: 0.75, strong: 1 } as const;
+
+/** 演出全体の強さ。数値（0〜2）か "subtle" / "medium" / "strong" を受け付ける */
+function normalizeIntensity(v: unknown, warn: (m: string) => void): number {
+  if (v === undefined) return 1;
+  if (typeof v === 'string' && v in INTENSITY_WORDS) return INTENSITY_WORDS[v as keyof typeof INTENSITY_WORDS];
+  const n = typeof v === 'number' ? v : typeof v === 'string' ? Number(v) : NaN;
+  if (Number.isFinite(n)) return Math.min(2, Math.max(0, n));
+  warn(`intensity: ${JSON.stringify(v)} は読めないので 1 を使います`);
+  return 1;
+}
+
+/**
+ * 強さ s を掛けたレイヤーの不透明度。s ≤ 1 では比例して薄め、
+ * s > 1 では不透明度 1 に向かって強める（元の強弱の関係はなるべく保つ）。
+ */
+export function scaleOpacity(opacity: number, s: number): number {
+  if (s <= 1) return opacity * Math.max(0, s);
+  return opacity + (1 - opacity) * Math.min(1, s - 1);
+}
+
 export function parsePlan(text: string): ParseResult {
   const r = parseReply(text);
   return r.variants[0] ?? { errors: r.errors, warnings: [], comment: r.comment };
@@ -288,6 +311,7 @@ function compileRoot(value: unknown): ParseResult {
     plan: {
       title: typeof root.title === 'string' ? root.title : undefined,
       intent: typeof root.intent === 'string' ? root.intent : undefined,
+      intensity: normalizeIntensity(root.intensity, warn),
       layers,
     },
     raw: root,

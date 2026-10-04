@@ -34,6 +34,7 @@ export function specText(): string {
 ## JSON の構造
 - format: "${PLAN_FORMAT}"（固定）／ version: ${PLAN_VERSION}（固定）
 - title: 演出の短い名前 ／ intent: 演出の狙い（1文）
+- intensity: 演出全体の強さ（省略で 1）。"subtle"（原画を主役に、演出はほのか）/ "medium" / "strong" か 0〜2 の数値。全レイヤーの opacity にまとめて掛かる。ユーザーはアプリ側でもこの強さをスライダーで調整できる
 - analysis: 画像を観察したメモ（自由形式。被写体・顔の位置・光源・空いている背景など）
 - protect: 守りたい領域（region の配列）。顔など。全レイヤーでここは効きが弱まる。
 - blocks: 演出ブロックの配列（意味のまとまり。上から順に重なる）
@@ -115,7 +116,13 @@ export function buildInitialPrompt({ talk, variants = 1 }: PromptOptions = { tal
 - 目安は 3〜6 ブロック、合計 4〜12 レイヤー。やりすぎず、絵の良さを引き立てる方向で。強い効果は opacity で加減してください。
 - 描き文字（soundText）・漫符（emotionMark）・漫画素材（illustrationOverlay）・フラッシュ（burst）などの漫画的リアクションは、要望や場面に合う時に使ってください。キャラの顔や体に重ならない位置（頭の横・上、背景の余白）に置きます。
 - 集中線（focusLines）やフラッシュ（burst）の中心の空き（innerRx / innerRy）は、キャラの顔と上半身がすっぽり入る大きさにしてください。
-- 「びっくり」「気まずい」「大袈裟に」などの定番の感情演出は、演出プリセット（reactionScene）を 1 つ置くだけでも作れます。プリセットに個別のエフェクトを足して味付けするのもおすすめです。
+- 「びっくり」「気まずい」「大袈裟に」などの定番の感情演出は、演出プリセット（reactionScene）を 1 つ置くだけでも作れます。プリセットが何をどこに描くかは reactionScene の説明にあるので、個別の素材を足す時はそれと重ならない位置にしてください。
+
+## 演出の心得
+- 画面の場所に意味を持たせて置き場所を決めてください。例: 広い空や無地の余白 = 感情・描き文字・漫符の場所 / 人物の顔と体 = 守る場所 / 人物のすぐ横・頭上 = リアクション記号 / 水平線・水面・地面 = 環境音や動きの線 / 大きな背景（雲・壁など）= 質感（トーン・網点）を乗せる場所。
+- 漫画記号や描き文字を複数置く時は、高さと大きさを段違いにずらし、横一列に並べないでください（UI のアイコンのように見えてしまう）。
+- 静かな絵・余白の多い絵ほど、演出は少なく小さく。描き文字 1 つ・線数本で物語が変わることがあります。強くするほど良くなるとは限りません。
+- 迷ったら intensity を "subtle" か "medium" にしてください（ユーザーがアプリで強められます）。
 - 画像が添付されていない場合は、要望から一般的な構図を想定してください。
 - ${replyFormat(talk, false, variants)}
 
@@ -134,18 +141,20 @@ export interface RevisionOptions extends PromptOptions {
   picked?: [number, number];
   /** アプリ上で手動調整したものか */
   edited?: boolean;
+  /** アプリ側で調整した演出の強さ（1 = そのまま） */
+  strength?: number;
   warnings?: string[];
   includeSpec: boolean;
 }
 
-export function buildRevisionPrompt({ currentPlan, warnings = [], includeSpec, talk, variants = 1, picked, edited }: RevisionOptions): string {
+export function buildRevisionPrompt({ currentPlan, warnings = [], includeSpec, talk, variants = 1, picked, edited, strength = 1 }: RevisionOptions): string {
   const warn =
     warnings.length > 0
       ? `\n## アプリが出した警告（直せるものは直してください）\n${warnings.slice(0, 20).map((w) => `- ${w}`).join('\n')}\n`
       : '';
   return `# AI Paste Effect 演出プランの修正依頼
 
-あなたが作った演出プラン JSON（下記）をアプリで画像に適用しました。${picked && picked[1] > 1 ? `\n全 ${picked[1]} 案のうち、案 ${picked[0]} を選びました（下記がその案です）。` : ''}${edited ? '\nさらに、アプリ上で私が手動で調整しています（下記は調整後の JSON です。調整の意図をくみ取ってください）。' : ''}
+あなたが作った演出プラン JSON（下記）をアプリで画像に適用しました。${picked && picked[1] > 1 ? `\n全 ${picked[1]} 案のうち、案 ${picked[0]} を選びました（下記がその案です）。` : ''}${edited ? '\nさらに、アプリ上で私が手動で調整しています（下記は調整後の JSON です。調整の意図をくみ取ってください）。' : ''}${Math.abs(strength - 1) > 0.01 ? `\nアプリの「演出の強さ」を ${Math.round(strength * 100)}% にして見ています（100% が下記 JSON のまま）。この強さの見え方が好みなので、修正版ではこの強さが 100% になるように各 opacity を調整してください。` : ''}
 結果画像を添付している場合は、それが現在の仕上がりです。
 下の【修正の要望】に合わせて、修正版の JSON を全体を省略せずに返してください（各案とも完全な JSON で）。
 画像そのものは描き変えられないので、演出だけで調整してください。

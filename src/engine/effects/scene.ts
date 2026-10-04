@@ -36,6 +36,20 @@ const KIND_LABELS: Record<Kind, string> = {
   confused: '混乱・目が回る',
 };
 
+/** AI 向けに、各プリセットが何をどこに描くかを書いておく（個別素材と重ならないように） */
+const KIND_CONTENTS: Record<Kind, string> = {
+  surprise: '顔の周りの黒い集中線、頭上に驚き線 3 本、印側の斜め上に「!!」',
+  shock: '上から暗い青のグラデーションと青い縦線、印側の頭の横に稲妻',
+  gloom: '上から垂れる縦線、体のあたりに黒いモヤ、頭上に雨雲',
+  awkward: '上から薄い縦線、印側の頭の横に大きな汗、その斜め上に「…」',
+  love: '顔の周りに花の輪、全体に淡い玉ボケ、印側の斜め上にハート 3 つ',
+  joy: '全体にキラキラ、印側の斜め上に星の集まり、反対側の斜め上に花',
+  comedy: '印側の斜め上にポンッの星、反対側に汗 3 つ、反対側の下にヒュッの線',
+  anger: '顔の周りの赤い集中線、印側の頭の上に怒りマーク、頭上に湯気',
+  drama: '周囲を黒く塗るベタフラッシュ、白い集中線、体の周りに衝撃の輪',
+  confused: '頭上を回る星、印側の頭の横に「?」、反対側に汗',
+};
+
 interface Geo {
   /** 顔の中心から、顔単位 (dx, dy) ずらした正規化座標 */
   at(dx: number, dy: number): Point;
@@ -130,7 +144,7 @@ export const reactionScene = defineEffect({
   category: 'illustration',
   kind: 'overlay',
   defaultBlend: 'normal',
-  description: `感情や場面を 1 つ選ぶだけで、集中線・縦線・漫画素材・描き文字などを組み合わせた定番の漫画演出を描く。kind: ${KINDS.map((k) => `${k}（${KIND_LABELS[k]}）`).join(' / ')}。face は顔の中心、faceSize は顔の大きさ（短辺比）。印は side の側（auto なら余白の広い側）に置く。細かく作り込みたい時は、これを使わずに個別のエフェクトを組み合わせてもよい。`,
+  description: `感情や場面を 1 つ選ぶだけで、集中線・縦線・漫画素材・描き文字などを組み合わせた定番の漫画演出を描く。kind ごとの中身（顔単位 = faceSize。「印側」は side の側）: ${KINDS.map((k) => `${k}（${KIND_LABELS[k]}）= ${KIND_CONTENTS[k]}`).join(' / ')}。face は顔の中心、faceSize は顔の大きさ（短辺比）。印は side の側（auto なら余白の広い側）に置く。細かく作り込みたい時は、これを使わずに個別のエフェクトを組み合わせてもよい。`,
   params: {
     kind: p.enum(KINDS, 'surprise', '演出の種類'),
     face: p.point(0.5, 0.35, '顔の中心'),

@@ -50,6 +50,7 @@ function PromptStep() {
         variants,
         picked: [Math.min(picked, reply.variants.length - 1) + 1, reply.variants.length],
         edited: applied.edited,
+        strength: useSession.getState().strength,
       }),
     );
     toast(ok ? '修正依頼をコピーしました' : 'コピーできませんでした', ok ? 'ok' : 'err');

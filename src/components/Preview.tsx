@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react';
-import { ChevronDown, Download, Hand, Loader2, MessageCircle, Share2, SlidersHorizontal, Sparkles } from 'lucide-react';
+import { ChevronDown, Download, Gauge, Hand, Loader2, MessageCircle, RotateCcw, Share2, SlidersHorizontal, Sparkles } from 'lucide-react';
 import { useAppliedParse, useAppliedReply } from '../hooks/usePipeline';
 import { canvasToBlob, downloadBlob, extensionOf } from '../lib/image';
 import { useOutput } from '../store/output';
@@ -218,6 +218,49 @@ function VariantPicker() {
   );
 }
 
+/**
+ * 演出の強さ。AI は実際の仕上がりを見られないので、強弱の最終調整はアプリ側で手早くできるようにする。
+ */
+function StrengthSlider() {
+  const strength = useSession((s) => s.strength);
+  const setStrength = useSession((s) => s.setStrength);
+  const pct = Math.round(strength * 100);
+  return (
+    <div className="rounded-xl bg-surface-2 px-3 py-2">
+      <div className="flex items-center gap-2">
+        <Gauge className="size-4 shrink-0 text-muted" />
+        <span className="shrink-0 text-xs font-semibold">演出の強さ</span>
+        <input
+          type="range"
+          aria-label="演出の強さ"
+          min={0}
+          max={2}
+          step={0.05}
+          value={strength}
+          onChange={(e) => setStrength(Number(e.target.value))}
+          className="h-6 min-w-0 flex-1 cursor-pointer accent-[var(--accent)]"
+        />
+        <span className="w-11 shrink-0 text-right font-mono text-xs text-muted tabular-nums">{pct}%</span>
+        <button
+          type="button"
+          title="AI の案どおり（100%）に戻す"
+          aria-label="演出の強さを 100% に戻す"
+          disabled={strength === 1}
+          onClick={() => setStrength(1)}
+          className="grid size-7 shrink-0 place-items-center rounded-lg text-muted hover:bg-surface hover:text-ink disabled:opacity-30"
+        >
+          <RotateCcw className="size-3.5" />
+        </button>
+      </div>
+      <div className="flex justify-between pr-[4.5rem] pl-[6.5rem] text-[10px] text-muted">
+        <span>原画寄り</span>
+        <span>AI の案</span>
+        <span>強め</span>
+      </div>
+    </div>
+  );
+}
+
 /** AI の語りを軽く整形して表示する（見出し記号や強調記号は外す） */
 function AiComment({ text }: { text: string }) {
   const [open, setOpen] = useState(false);
@@ -288,6 +331,7 @@ export function Preview({ fill = false }: { fill?: boolean }) {
         <Viewer fill={fill} />
       </div>
       {result && <VariantPicker />}
+      {(result || useSession.getState().strength !== 1) && <StrengthSlider />}
       <div className="flex flex-wrap items-center gap-2">
         <CompareToggle />
         <div className="ml-auto flex gap-2">

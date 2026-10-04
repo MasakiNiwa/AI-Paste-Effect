@@ -4,7 +4,7 @@
  * マスクと合成は Canvas 2D の globalCompositeOperation で行う（全ブラウザで安定）。
  */
 import type { Filter, Renderer } from 'pixi.js';
-import type { CompiledPlan } from './plan';
+import { scaleOpacity, type CompiledPlan } from './plan';
 import { buildMask, type Mask } from './region';
 import { mulberry32 } from './random';
 import type { BlendMode, EffectContext } from './types';
@@ -130,7 +130,11 @@ export interface RenderResult {
   errors: string[];
 }
 
-export async function renderPlan(original: HTMLCanvasElement, plan: CompiledPlan): Promise<RenderResult> {
+/**
+ * strength はアプリ側で調整する演出の強さ（1 = そのまま）。プランの intensity と掛け合わせる。
+ */
+export async function renderPlan(original: HTMLCanvasElement, plan: CompiledPlan, strength = 1): Promise<RenderResult> {
+  const s = plan.intensity * strength;
   const { width, height } = original;
   const acc = createCanvas(width, height);
   const g = ctx2d(acc);
@@ -138,6 +142,7 @@ export async function renderPlan(original: HTMLCanvasElement, plan: CompiledPlan
   const errors: string[] = [];
 
   for (const layer of plan.layers) {
+    if (scaleOpacity(layer.opacity, s) <= 0.002) continue; // 見えないレイヤーは描かない
     try {
       const mask = buildMask(width, height, layer.regions, layer.protect);
       const filterPad = Math.round(Math.min(width, height) * 0.08);
@@ -166,7 +171,7 @@ export async function renderPlan(original: HTMLCanvasElement, plan: CompiledPlan
         og.drawImage(maskToCanvas(mask), 0, 0, width, height);
       }
       g.save();
-      g.globalAlpha = layer.opacity;
+      g.globalAlpha = scaleOpacity(layer.opacity, s);
       g.globalCompositeOperation = COMPOSITE[layer.blend];
       g.drawImage(out, 0, 0);
       g.restore();

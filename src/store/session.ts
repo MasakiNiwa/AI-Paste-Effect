@@ -19,6 +19,9 @@ interface SessionStore {
   /** 手動編集した案（案の番号 → 編集後のプラン）。新しい返答を適用すると消える */
   edits: Record<number, EditPlan>;
   setEdit: (variant: number, plan: EditPlan | null) => void;
+  /** アプリ側で調整する演出の強さ（1 = AI の案どおり）。新しい返答を適用すると 1 に戻る */
+  strength: number;
+  setStrength: (s: number) => void;
   /** 新しいイラストで始め直す */
   clear: () => void;
 }
@@ -31,10 +34,12 @@ export const useSession = create<SessionStore>()(
       setJsonText: (jsonText) =>
         set(
           useSettings.getState().autoApply && jsonText !== get().appliedText
-            ? { jsonText, appliedText: jsonText, variant: 0, edits: {} }
+            ? { jsonText, appliedText: jsonText, variant: 0, edits: {}, strength: 1 }
             : { jsonText },
         ),
-      apply: () => set({ appliedText: get().jsonText, variant: 0, edits: {} }),
+      apply: () => set({ appliedText: get().jsonText, variant: 0, edits: {}, strength: 1 }),
+      strength: 1,
+      setStrength: (strength) => set({ strength }),
       variant: 0,
       setVariant: (variant) => set({ variant }),
       edits: {},
@@ -47,14 +52,14 @@ export const useSession = create<SessionStore>()(
       imageFile: null,
       imageName: '',
       setImageFile: (imageFile, imageName = '') => set({ imageFile, imageName }),
-      clear: () => set({ jsonText: '', appliedText: '', imageFile: null, imageName: '', variant: 0, edits: {} }),
+      clear: () => set({ jsonText: '', appliedText: '', imageFile: null, imageName: '', variant: 0, edits: {}, strength: 1 }),
     }),
     {
       name: 'ai-paste-effect:session',
       partialize: (s) => {
         const keep = useSettings.getState().rememberJson;
         return keep
-          ? { jsonText: s.jsonText, appliedText: s.appliedText, variant: s.variant, edits: s.edits }
+          ? { jsonText: s.jsonText, appliedText: s.appliedText, variant: s.variant, edits: s.edits, strength: s.strength }
           : { jsonText: '', appliedText: '', variant: 0, edits: {} };
       },
     },
