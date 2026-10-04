@@ -5,6 +5,7 @@
  */
 import { normalizeParams, p, type ParamSchema, type Point } from '../params';
 import { defineEffect, type EffectContext, type EffectDefinition } from '../types';
+import { PACKS } from '../assets';
 import { illustrationOverlay } from './illustration';
 import { focusLines } from './manga';
 import { bokeh, sparkle } from './particle';
@@ -20,7 +21,7 @@ type Step = {
   blend?: GlobalCompositeOperation;
 };
 
-const KINDS = ['surprise', 'shock', 'gloom', 'awkward', 'love', 'joy', 'comedy', 'anger', 'drama', 'confused'] as const;
+const KINDS = ['surprise', 'shock', 'gloom', 'awkward', 'love', 'joy', 'comedy', 'anger', 'drama', 'confused', 'tsukkomi', 'panic', 'deadpan', 'smug', 'flustered', 'deflated'] as const;
 type Kind = (typeof KINDS)[number];
 
 const KIND_LABELS: Record<Kind, string> = {
@@ -34,6 +35,12 @@ const KIND_LABELS: Record<Kind, string> = {
   anger: '怒り・ぷんすか',
   drama: '大袈裟なドラマ',
   confused: '混乱・目が回る',
+  tsukkomi: 'ツッコミ',
+  panic: 'あたふた',
+  deadpan: '真顔の間',
+  smug: 'ドヤッ',
+  flustered: '照れあせ',
+  deflated: 'しょぼーん',
 };
 
 /** AI 向けに、各プリセットが何をどこに描くかを書いておく（個別素材と重ならないように） */
@@ -48,6 +55,12 @@ const KIND_CONTENTS: Record<Kind, string> = {
   anger: '顔の周りの赤い集中線、印側の頭の上に怒りマーク、頭上に湯気',
   drama: '周囲を黒く塗るベタフラッシュ、白い集中線、体の周りに衝撃の輪',
   confused: '頭上を回る星、印側の頭の横に「?」、反対側に汗',
+  tsukkomi: '印側の斜め上にギザギザ衝撃、反対側の頭の横に大小の疑問符',
+  panic: '印側の頭の横に飛び散る汗、反対側の上に感嘆符、頭上に混乱線',
+  deadpan: '印側の頭の横に間の点3つ、その下に短い気まずい縦線',
+  smug: '印側の斜め上に太いきらめき、反対側の少し下に丸印',
+  flustered: '印側の頭の横に焦りのジグザグ、反対側の少し上に飛び散る汗',
+  deflated: '印側の頭の横にゆるい渦、反対側の口より外の余白に漫画記号の魂',
 };
 
 interface Geo {
@@ -70,6 +83,18 @@ const asset = (id: string, pos: Point, size: number, extra: Record<string, unkno
 function recipe(kind: Kind, g: Geo, I: number): Step[] {
   const s = g.side;
   switch (kind) {
+    case 'tsukkomi':
+      return [asset('comedy/tsukkomiBurst', g.at(1.2 * s, -0.9), g.u(0.8)), asset('comedy/questionPair', g.at(-1.3 * s, -0.3), g.u(0.7), { angle: -s * 12 })];
+    case 'panic':
+      return [asset('comedy/panicSweat', g.at(1.3 * s, -0.35), g.u(0.8), { flipX: s < 0 }), asset('comedy/exclaimBounce', g.at(-1.2 * s, -0.95), g.u(0.6), { angle: -s * 14 }), asset('comedy/confusionKnot', g.at(0, -1.5), g.u(0.8))];
+    case 'deadpan':
+      return [asset('comedy/deadpanDots', g.at(1.3 * s, -0.5), g.u(0.7)), asset('comedy/cringeHatch', g.at(1.1 * s, 0.3), g.u(0.55))];
+    case 'smug':
+      return [asset('comedy/smugSpark', g.at(1.2 * s, -0.9), g.u(0.75)), asset('comedy/yesCircle', g.at(-1.25 * s, 0.2), g.u(0.55))];
+    case 'flustered':
+      return [asset('comedy/flusteredZig', g.at(1.25 * s, -0.1), g.u(0.65)), asset('comedy/panicSweat', g.at(-1.2 * s, -0.85), g.u(0.55), { flipX: s > 0 })];
+    case 'deflated':
+      return [asset('comedy/deflatedSpiral', g.at(1.2 * s, -0.75), g.u(0.7)), asset('comedy/tinySoul', g.at(-1.35 * s, 0.45), g.u(0.7), { flipX: s > 0 })];
     case 'surprise':
       return [
         { effect: focusLines, params: { center: g.at(0, 0), innerRx: g.rx(1.5), innerRy: g.ry(1.7), count: 150, thickness: 0.006 }, alpha: 0.75 * I },
@@ -147,6 +172,7 @@ export const reactionScene = defineEffect({
   description: `感情や場面を 1 つ選ぶだけで、集中線・縦線・漫画素材・描き文字などを組み合わせた定番の漫画演出を描く。kind ごとの中身（顔単位 = faceSize。「印側」は side の側）: ${KINDS.map((k) => `${k}（${KIND_LABELS[k]}）= ${KIND_CONTENTS[k]}`).join(' / ')}。face は顔の中心、faceSize は顔の大きさ（短辺比）。印は side の側（auto なら余白の広い側）に置く。細かく作り込みたい時は、これを使わずに個別のエフェクトを組み合わせてもよい。`,
   params: {
     kind: p.enum(KINDS, 'surprise', '演出の種類'),
+    pack: p.enum(['auto', ...PACKS.map((x) => x.id)], 'auto', '素材の絵柄セット（auto = 設定のセット）'),
     face: p.point(0.5, 0.35, '顔の中心'),
     faceSize: p.num(0.05, 0.8, 0.22, '顔の大きさ（短辺比。顔の幅くらい）'),
     side: p.enum(['auto', 'left', 'right'] as const, 'auto', '漫画の印を置く側'),
@@ -166,7 +192,8 @@ export const reactionScene = defineEffect({
     const out = ctx.createCanvas();
     const g = ctx2d(out);
     for (const step of recipe(v.kind, geo, v.intensity)) {
-      const c = await renderStep(ctx, step);
+      const styled = step.effect.id === 'illustrationOverlay' ? { ...step, params: { ...step.params, pack: v.pack } } : step;
+      const c = await renderStep(ctx, styled);
       g.globalAlpha = Math.max(0, Math.min(1, step.alpha ?? v.intensity));
       g.globalCompositeOperation = step.blend ?? 'source-over';
       g.setTransform(1, 0, 0, 1, 0, 0);
