@@ -54,3 +54,20 @@ export function downloadBlob(blob: Blob, filename: string) {
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+
+/** ファイル名に使えない文字を除く */
+const safe = (s: string) => s.replace(/[\\/:*?"<>|\s]+/g, '_').replace(/^_+|_+$/g, '');
+
+/**
+ * 保存するファイル名。「元の名前_案2_タイトル_時刻.png」のようにして、
+ * 複数の案や何度かの保存で同じ名前にならないようにする。
+ */
+export function exportFileName(imageName: string, variantNo: number, title: string | undefined, ext: string, now = new Date()): string {
+  const base = safe(imageName.replace(/\.[^.]+$/, '')).slice(0, 30) || 'image';
+  const parts = [base];
+  if (variantNo > 0) parts.push(`案${variantNo}`);
+  if (title) parts.push(safe(title).slice(0, 20));
+  const p2 = (n: number) => String(n).padStart(2, '0');
+  parts.push(`${now.getFullYear()}${p2(now.getMonth() + 1)}${p2(now.getDate())}-${p2(now.getHours())}${p2(now.getMinutes())}${p2(now.getSeconds())}`);
+  return `${parts.filter(Boolean).join('_')}.${ext}`;
+}

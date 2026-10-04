@@ -33,6 +33,7 @@ export const CATEGORIES = {
   illustration: '漫画素材・演出プリセット',
   texture: '質感',
   photo: '写真の質感',
+  paint: '絵の具・滲み',
   distortion: 'ぼかし・歪み',
   tamani: 'たまにエフェクト',
 } as const;

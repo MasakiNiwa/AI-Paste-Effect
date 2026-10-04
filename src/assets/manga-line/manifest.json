@@ -1,0 +1,94 @@
+{
+  "assets": [
+    {
+      "id": "shock/lines3",
+      "file": "shock-lines3.svg",
+      "label": "頭の上の驚き線 3 本（細い線画）",
+      "tags": [
+        "shock"
+      ],
+      "colors": [
+        "#222222",
+        "#ffffff"
+      ],
+      "size": 0.18,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "shock/exclaim",
+      "file": "shock-exclaim.svg",
+      "label": "「!!」（細い線画）",
+      "tags": [
+        "shock"
+      ],
+      "colors": [
+        "#222222",
+        "#ffffff"
+      ],
+      "size": 0.16,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "comedy/sweatBig",
+      "file": "comedy-sweatBig.svg",
+      "label": "大きな汗（細い線画）",
+      "tags": [
+        "comedy"
+      ],
+      "colors": [
+        "#2f6db0",
+        "#ffffff"
+      ],
+      "size": 0.2,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "comedy/angerBig",
+      "file": "comedy-angerBig.svg",
+      "label": "怒りマーク（細い線画）",
+      "tags": [
+        "comedy"
+      ],
+      "colors": [
+        "#e43b3b",
+        "#ffffff"
+      ],
+      "size": 0.18,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "love/heartsTrio",
+      "file": "love-heartsTrio.svg",
+      "label": "ハートが 3 つ（細い線画）",
+      "tags": [
+        "love"
+      ],
+      "colors": [
+        "#ff4f86",
+        "#ffffff"
+      ],
+      "size": 0.25,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "joy/sparkleStars",
+      "file": "joy-sparkleStars.svg",
+      "label": "キラキラ（細い線画）",
+      "tags": [
+        "joy"
+      ],
+      "colors": [
+        "#ffbf2e",
+        "#ffffff"
+      ],
+      "size": 0.3,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    }
+  ]
+}

@@ -20,7 +20,7 @@
 ## 特徴
 
 - エフェクトの選択や数値調整の UI はありません。演出の設計はすべて AI に任せます
-- 色調・光・粒子・漫画表現・リアクション/描き文字・漫画素材/演出プリセット・質感・写真の質感・ぼかし/歪み・たまにエフェクトの 56 種類のエフェクト
+- 色調・光・粒子・漫画表現・リアクション/描き文字・漫画素材/演出プリセット・質感・写真の質感・絵の具/滲み・ぼかし/歪み・たまにエフェクトの 60 種類のエフェクト
 - 結果画面の「演出の強さ」スライダーで、AI に頼み直さずに演出全体の強弱を調整（AI は仕上がりを見られないため、最後の加減はアプリ側で）
 - 「編集」タブで、AI の案を手で調整（表示・強さ・色・位置・追加/削除/並べ替え）。調整内容は修正依頼にも反映
 - 手描きの漫画素材パック（驚き線・汗・ガーン・花・ハートなど 26 素材）と、「びっくり」「気まずい」「大袈裟ドラマ」などの演出プリセット
@@ -41,7 +41,7 @@ npm run build     # 型チェック + 本番ビルド（dist/）
 
 技術スタック: Vite / React / TypeScript / Tailwind CSS / Zustand / PixiJS + pixi-filters / Rough.js / Google Fonts / JSON5 / vite-plugin-pwa
 
-漫画素材は `scripts/gen-manga-assets.mjs` で生成した SVG（MIT）で、`src/assets/manga/manifest.json` に ID・タグ・ライセンスを記録しています。
+漫画素材は `src/assets/<セット名>/svg/` に SVG を置くだけで自動で認識されます（追加方法は [docs/ASSETS.md](docs/ASSETS.md)）。同じ素材 ID の絵を別のセットに置くと、ユーザーが絵柄を切り替えられます。標準の素材は `scripts/gen-manga-assets.mjs` で生成した SVG（MIT）です。
 
 `src/vendor/tamani-effect/` には [TaMaNi-Effect](https://github.com/MasakiNiwa/TaMaNi-Effect)（MIT License）のエフェクトを取り込んでいます。
 

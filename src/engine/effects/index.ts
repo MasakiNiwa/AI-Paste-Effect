@@ -14,6 +14,7 @@ import * as illustration from './illustration';
 import * as scene from './scene';
 import * as texture from './texture';
 import * as photo from './photo';
+import * as paint from './paint';
 import * as distortion from './distortion';
 import { TAMANI_EFFECTS } from './tamani';
 
@@ -29,6 +30,7 @@ export const EFFECTS: AnyEffect[] = [
   ...Object.values(scene),
   ...Object.values(texture),
   ...Object.values(photo),
+  ...Object.values(paint),
   ...Object.values(distortion),
   ...TAMANI_EFFECTS,
 ] as EffectDefinition<ParamSchema>[] as AnyEffect[];

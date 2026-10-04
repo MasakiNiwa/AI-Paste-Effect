@@ -177,7 +177,7 @@ export default function Edit() {
   const layerCount = plan.blocks.reduce((n, b) => n + b.layers.length, 0);
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start">
       {/* プレビュー（スマホでは上に固定） */}
       <div className="sticky top-0 z-10 -mx-4 -mt-4 bg-bg/95 px-4 pt-3 pb-2 backdrop-blur sm:-mt-6 lg:static lg:m-0 lg:bg-transparent lg:p-0">
         <div className="h-[34dvh] lg:h-[calc(100dvh-9rem)]">
@@ -303,12 +303,30 @@ export default function Edit() {
                             </select>
                           </div>
                         </div>
+                        <div className="space-y-1.5">
+                          <p className="text-xs font-semibold">
+                            顔などの保護<span className="ml-1 font-normal text-muted">AI が決めた保護範囲への効き方</span>
+                          </p>
+                          <select
+                            aria-label="顔などの保護"
+                            value={layer.protect === false || layer.protect === 0 ? 'off' : typeof layer.protect === 'number' && layer.protect < 1 ? 'half' : 'on'}
+                            onChange={(e) =>
+                              change(updateLayer(plan, ref, { protect: e.target.value === 'off' ? false : e.target.value === 'half' ? 0.5 : true }))
+                            }
+                            className="w-full rounded-lg border border-line bg-surface-2 px-2 py-1.5 text-sm"
+                          >
+                            <option value="on">守る（保護範囲には効かせない）</option>
+                            <option value="half">半分だけ守る</option>
+                            <option value="off">守らない（保護範囲にも効かせる）</option>
+                          </select>
+                        </div>
                         {Object.entries(effect.params as ParamSchema).map(([key, spec]) => (
                           <ParamControl
                             key={key}
                             name={key}
                             spec={spec}
                             value={values[key]}
+                            siblings={values}
                             onStart={snapshot}
                             onChange={(v) => commit(setLayerParam(plan, ref, key, spec, v))}
                             picking={pick?.key === key && sameRef(pick.ref, ref)}

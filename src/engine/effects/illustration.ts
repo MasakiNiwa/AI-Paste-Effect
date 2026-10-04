@@ -1,4 +1,4 @@
-import { ASSET_IDS, findAsset, loadAssetImage } from '../assets';
+import { ASSET_IDS, PACKS, findAsset, loadAssetImage } from '../assets';
 import { css } from '../color';
 import { p } from '../params';
 import { defineEffect } from '../types';
@@ -21,10 +21,11 @@ export const illustrationOverlay = defineEffect({
     flipY: p.bool(false, '上下反転'),
     color: p.color('#00000000', '主色（省略で素材の標準色）'),
     accent: p.color('#00000000', '副色・縁取り（省略で素材の標準色）'),
+    pack: p.enum(['auto', ...PACKS.map((x) => x.id)], 'auto', '絵柄のセット（auto = ユーザーが設定で選んだセット。AI は通常 auto のまま）'),
   },
   async render(ctx, v) {
     const out = ctx.createCanvas();
-    const asset = findAsset(v.asset);
+    const asset = findAsset(v.asset, v.pack);
     if (!asset) return out;
     const px = v.size * ctx.short;
     const c1 = v.color.a === 0 ? asset.colors[0] : css(v.color);
