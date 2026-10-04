@@ -198,3 +198,35 @@ describe('prompt', () => {
     expect(p).not.toContain('使えるエフェクト');
   });
 });
+
+describe('manga assets and presets', async () => {
+  const { ASSETS, assetSvg, assetCatalog } = await import('../src/engine/assets');
+  it('every asset in the manifest has an SVG with colour placeholders and a license', () => {
+    expect(ASSETS.length).toBeGreaterThanOrEqual(20);
+    for (const a of ASSETS) {
+      const svg = assetSvg(a, '#123456', '#abcdef');
+      expect(svg, a.id).toContain('<svg');
+      expect(svg, a.id).not.toContain('__C1__');
+      expect(a.license, a.id).toBeTruthy();
+    }
+    expect(assetCatalog()).toContain('shock/lines3');
+  });
+  it('parses illustrationOverlay and reactionScene layers', () => {
+    const r = parsePlan(
+      JSON.stringify({
+        layers: [
+          { effect: 'illustrationOverlay', params: { asset: 'comedy/sweatBig', position: { x: 0.7, y: 0.2 } } },
+          { effect: 'reactionScene', params: { kind: 'awkward', face: { x: 0.4, y: 0.3 } } },
+          { effect: 'illustrationOverlay', params: { asset: 'no/such' } },
+        ],
+      }),
+    );
+    expect(r.errors).toEqual([]);
+    expect(r.plan?.layers.map((l) => l.effect.id)).toEqual(['illustrationOverlay', 'reactionScene', 'illustrationOverlay']);
+    expect(r.plan?.layers[2].params.asset).toBe('shock/lines3');
+    expect(r.warnings.some((w) => w.includes('asset'))).toBe(true);
+  });
+  it('lists the asset catalog in the prompt', () => {
+    expect(buildInitialPrompt()).toContain('漫画素材カタログ');
+  });
+});

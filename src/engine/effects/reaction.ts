@@ -268,7 +268,7 @@ export const soundText = defineEffect({
     size: p.num(0.03, 0.5, 0.14, '1 文字の大きさ（短辺比）'),
     angle: p.num(-90, 90, -8, '全体の傾き（度）'),
     vertical: p.bool(false, '縦書きにする'),
-    jitter: p.num(0, 1, 0.35, '文字ごとの傾き・大きさの揺らぎ（勢い）'),
+    jitter: p.num(0, 1, 0.45, '文字ごとの傾き・大きさ・位置の揺らぎ（手書きの勢い。0.6 以上で大きく暴れる）'),
     color: p.color('#111111', '文字の色'),
     stroke: p.color('#ffffff', '縁取りの色'),
     strokeWidth: p.num(0, 0.4, 0.14, '縁取りの太さ（文字サイズ比）'),
@@ -298,17 +298,20 @@ export const soundText = defineEffect({
         ch,
         x: v.vertical ? 0 : t,
         y: v.vertical ? t : 0,
-        rot: turn + range(ctx.rng, -0.35, 0.35) * v.jitter,
-        scale: 1 + range(ctx.rng, -0.2, 0.25) * v.jitter,
-        dy: range(ctx.rng, -0.12, 0.12) * px * v.jitter,
+        // 手書きらしさ: 文字ごとに傾き・大きさ・位置・縦横比を揺らす（後半の文字ほど勢いで大きくなりがち）
+        rot: turn + range(ctx.rng, -0.55, 0.55) * v.jitter,
+        scale: 1 + (range(ctx.rng, -0.25, 0.3) + (i / Math.max(1, chars.length - 1)) * 0.15) * v.jitter,
+        squash: 1 + range(ctx.rng, -0.15, 0.15) * v.jitter,
+        dx: range(ctx.rng, -0.1, 0.1) * px * v.jitter,
+        dy: range(ctx.rng, -0.2, 0.2) * px * v.jitter,
       };
     });
     const each = (draw: (ch: string) => void) => {
       for (const gl of glyphs) {
         g.save();
-        g.translate(gl.x, gl.y + gl.dy);
+        g.translate(gl.x + gl.dx, gl.y + gl.dy);
         g.rotate(gl.rot);
-        g.scale(gl.scale, gl.scale);
+        g.scale(gl.scale * gl.squash, gl.scale / gl.squash);
         draw(gl.ch);
         g.restore();
       }

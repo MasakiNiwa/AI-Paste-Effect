@@ -10,6 +10,8 @@ import * as light from './light';
 import * as particle from './particle';
 import * as manga from './manga';
 import * as reaction from './reaction';
+import * as illustration from './illustration';
+import * as scene from './scene';
 import * as texture from './texture';
 import * as photo from './photo';
 import * as distortion from './distortion';
@@ -23,6 +25,8 @@ export const EFFECTS: AnyEffect[] = [
   ...Object.values(particle),
   ...Object.values(manga),
   ...Object.values(reaction),
+  ...Object.values(illustration),
+  ...Object.values(scene),
   ...Object.values(texture),
   ...Object.values(photo),
   ...Object.values(distortion),

@@ -2,6 +2,7 @@
  * AI に渡すプロンプトの生成。エフェクト仕様はすべて登録簿から自動生成する。
  */
 import { EFFECTS } from './effects';
+import { assetCatalog } from './assets';
 import { EXAMPLE_PLAN } from './example';
 import { describeParam, type ParamSchema } from './params';
 import { PLAN_FORMAT, PLAN_VERSION } from './plan';
@@ -63,7 +64,11 @@ ${BLEND_MODES.map((b) => `"${b}"`).join(' / ')}
 - 目安: 光を足す → screen / add、影や色を沈める → multiply、色味を馴染ませる → soft-light / overlay / color
 
 ## 使えるエフェクト
-${effectCatalog()}`;
+${effectCatalog()}
+## 漫画素材カタログ（illustrationOverlay の asset）
+手描きの漫画素材。素材は中心が position に来るように置かれ、size が素材の幅になる。
+${assetCatalog()}
+`;
 }
 
 function jsonBlock(value: unknown): string {
@@ -108,7 +113,9 @@ export function buildInitialPrompt({ talk, variants = 1 }: PromptOptions = { tal
 - まず画像をよく観察して analysis に書き、被写体・顔・光源・余白の位置に合わせて座標を決めてください。
 - 顔は protect に入れ、色や粒子で表情の印象を壊さないでください。
 - 目安は 3〜6 ブロック、合計 4〜12 レイヤー。やりすぎず、絵の良さを引き立てる方向で。強い効果は opacity で加減してください。
-- 描き文字（soundText）・漫符（emotionMark）・フラッシュ（burst）などの漫画的リアクションは、要望や場面に合う時に使ってください。キャラの顔や体に重ならない位置に置きます。
+- 描き文字（soundText）・漫符（emotionMark）・漫画素材（illustrationOverlay）・フラッシュ（burst）などの漫画的リアクションは、要望や場面に合う時に使ってください。キャラの顔や体に重ならない位置（頭の横・上、背景の余白）に置きます。
+- 集中線（focusLines）やフラッシュ（burst）の中心の空き（innerRx / innerRy）は、キャラの顔と上半身がすっぽり入る大きさにしてください。
+- 「びっくり」「気まずい」「大袈裟に」などの定番の感情演出は、演出プリセット（reactionScene）を 1 つ置くだけでも作れます。プリセットに個別のエフェクトを足して味付けするのもおすすめです。
 - 画像が添付されていない場合は、要望から一般的な構図を想定してください。
 - ${replyFormat(talk, false, variants)}
 
