@@ -1,0 +1,580 @@
+{
+  "assets": [
+    {
+      "id": "manga/softFocus",
+      "file": "manga-softFocus.svg",
+      "label": "柔らかな疎らな集中線。中心を顔・上半身の外側に置き、人物を保護",
+      "size": 0.85,
+      "colors": [
+        "#8d9bb4",
+        "#d4e1ed"
+      ],
+      "tags": [
+        "manga",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "manga/topGloom",
+      "file": "manga-topGloom.svg",
+      "label": "上端と下端が消える縦線。背景の上側へ。multiply、顔・肌は保護",
+      "size": 0.7,
+      "colors": [
+        "#8d9bb4",
+        "#d4e1ed"
+      ],
+      "tags": [
+        "manga",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "manga/quietHatch",
+      "file": "manga-quietHatch.svg",
+      "label": "疎らな斜線の陰影。背景の局所に。multiply、顔・首・髪を保護",
+      "size": 0.5,
+      "colors": [
+        "#8d9bb4",
+        "#d4e1ed"
+      ],
+      "tags": [
+        "manga",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "manga/waveringAura",
+      "file": "manga-waveringAura.svg",
+      "label": "揺らぐ細いオーラ線。人物の周辺の余白へ。顔・体は保護",
+      "size": 0.6,
+      "colors": [
+        "#8d9bb4",
+        "#d4e1ed"
+      ],
+      "tags": [
+        "manga",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "manga/silentRings",
+      "file": "manga-silentRings.svg",
+      "label": "静かな波紋状の輪。背景の余白へ。中心を顔から離す",
+      "size": 0.5,
+      "colors": [
+        "#8d9bb4",
+        "#d4e1ed"
+      ],
+      "tags": [
+        "manga",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "manga/brokenBorder",
+      "file": "manga-brokenBorder.svg",
+      "label": "途切れた手描きの枠。余白を囲む。全体を囲う場合も人物保護",
+      "size": 0.8,
+      "colors": [
+        "#8d9bb4",
+        "#d4e1ed"
+      ],
+      "tags": [
+        "manga",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "light/softHalo",
+      "file": "light-softHalo.svg",
+      "label": "透明に消える柔らかな光の輪。光源側の背景へ。screen、低いopacity",
+      "size": 0.65,
+      "colors": [
+        "#ffe4b7",
+        "#ffffff"
+      ],
+      "tags": [
+        "light",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "light/sideGlow",
+      "file": "light-sideGlow.svg",
+      "label": "横長の淡い光だまり。水平線や窓辺の背景へ。screen、顔を保護",
+      "size": 0.8,
+      "colors": [
+        "#ffe4b7",
+        "#ffffff"
+      ],
+      "tags": [
+        "light",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "light/rayFan",
+      "file": "light-rayFan.svg",
+      "label": "疎らな光の放射帯。光源側へ。screen、人物と逆光の向きを合わせる",
+      "size": 0.8,
+      "colors": [
+        "#fff3cc",
+        "#ffffff"
+      ],
+      "tags": [
+        "light",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "light/rimStreak",
+      "file": "light-rimStreak.svg",
+      "label": "縦長の光の筋。人物の輪郭の近くの背景へ。screen、顔には重ねない",
+      "size": 0.18,
+      "colors": [
+        "#fff3da",
+        "#ffffff"
+      ],
+      "tags": [
+        "light",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "light/dustCluster",
+      "file": "light-dustCluster.svg",
+      "label": "疎らな光の粉。光のある背景へ。screen、顔・肌を保護",
+      "size": 0.45,
+      "colors": [
+        "#ffedcc",
+        "#ffffff"
+      ],
+      "tags": [
+        "light",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "light/softBokeh",
+      "file": "light-softBokeh.svg",
+      "label": "柔らかな少数の玉ボケ。背景の余白へ。screen、目・顔は保護",
+      "size": 0.55,
+      "colors": [
+        "#ffdfce",
+        "#ffffff"
+      ],
+      "tags": [
+        "light",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "paint/edgeWash",
+      "file": "paint-edgeWash.svg",
+      "label": "水彩風の淡い縁のにじみ。画面端へ低いopacity、顔・肌を保護",
+      "size": 0.65,
+      "colors": [
+        "#90bbd3",
+        "#dbe7ed"
+      ],
+      "tags": [
+        "paint",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "paint/cloudWash",
+      "file": "paint-cloudWash.svg",
+      "label": "不定形の淡いにじみ。背景の質感用。soft-light、低いopacity",
+      "size": 0.6,
+      "colors": [
+        "#8d9bb4",
+        "#d4e1ed"
+      ],
+      "tags": [
+        "paint",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "paint/inkBloom",
+      "file": "paint-inkBloom.svg",
+      "label": "中心から滲むインク風の染み。背景だけに薄く。multiply、人物を保護",
+      "size": 0.45,
+      "colors": [
+        "#61677d",
+        "#9eacc2"
+      ],
+      "tags": [
+        "paint",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "paint/washRibbon",
+      "file": "paint-washRibbon.svg",
+      "label": "横長の水彩風にじみ帯。水平線・余白へ。soft-light、肌を保護",
+      "size": 0.65,
+      "colors": [
+        "#b6a4c7",
+        "#f1ced6"
+      ],
+      "tags": [
+        "paint",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "paint/splashFine",
+      "file": "paint-splashFine.svg",
+      "label": "細かな絵の具の飛沫。画面の角へ。multiply、顔・肌を保護",
+      "size": 0.38,
+      "colors": [
+        "#7198b1",
+        "#ffffff"
+      ],
+      "tags": [
+        "paint",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "paint/dryRibbon",
+      "file": "paint-dryRibbon.svg",
+      "label": "横長の乾いた筆跡。背景の余白へ。multiply、低いopacity",
+      "size": 0.65,
+      "colors": [
+        "#8697ad",
+        "#ffffff"
+      ],
+      "tags": [
+        "paint",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "frame/leafCorner",
+      "file": "frame-leafCorner.svg",
+      "label": "葉形の線画の角飾り。画面の隅へ。物体として人物に持たせない",
+      "size": 0.42,
+      "colors": [
+        "#93aa9c",
+        "#ffffff"
+      ],
+      "tags": [
+        "frame",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "frame/flowerCorner",
+      "file": "frame-flowerCorner.svg",
+      "label": "花の輪郭の角飾り。画面の隅へ小さく。顔周辺に密集させない",
+      "size": 0.4,
+      "colors": [
+        "#bd94a9",
+        "#d7becc"
+      ],
+      "tags": [
+        "frame",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "frame/looseRibbon",
+      "file": "frame-looseRibbon.svg",
+      "label": "ゆるいリボン状の抽象線。余白や画面端へ。人物の服として使わない",
+      "size": 0.5,
+      "colors": [
+        "#b09ba8",
+        "#d7c9d1"
+      ],
+      "tags": [
+        "frame",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "frame/petalScatter",
+      "file": "frame-petalScatter.svg",
+      "label": "疎らな抽象花びらの装飾。背景の余白へ。顔・肌を保護",
+      "size": 0.45,
+      "colors": [
+        "#be96ac",
+        "#ffffff"
+      ],
+      "tags": [
+        "frame",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "frame/dottedArc",
+      "file": "frame-dottedArc.svg",
+      "label": "点で描いた弧。顔から離れた余白に。優しい囲み・余韻",
+      "size": 0.45,
+      "colors": [
+        "#8d9bb4",
+        "#d4e1ed"
+      ],
+      "tags": [
+        "frame",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "frame/openBrackets",
+      "file": "frame-openBrackets.svg",
+      "label": "緩い括弧状の装飾。余白の言葉や感情を囲む。顔は保護",
+      "size": 0.5,
+      "colors": [
+        "#8d9bb4",
+        "#d4e1ed"
+      ],
+      "tags": [
+        "frame",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "calm/lingeringArc",
+      "file": "calm-lingeringArc.svg",
+      "label": "余韻を示す一本の弧。広い余白へ。人物に沿わせず少数で使う",
+      "size": 0.4,
+      "colors": [
+        "#8d9bb4",
+        "#d4e1ed"
+      ],
+      "tags": [
+        "calm",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "calm/distantDots",
+      "file": "calm-distantDots.svg",
+      "label": "遠ざかる大小の点。背景の余白に横向きで。静けさ・ためらい",
+      "size": 0.3,
+      "colors": [
+        "#8d9bb4",
+        "#d4e1ed"
+      ],
+      "tags": [
+        "calm",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "calm/softPulse",
+      "file": "calm-softPulse.svg",
+      "label": "柔らかな鼓動の線。胸の横の余白へ。肌に重ねない",
+      "size": 0.27,
+      "colors": [
+        "#b88398",
+        "#ffffff"
+      ],
+      "tags": [
+        "calm",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "calm/rippleEcho",
+      "file": "calm-rippleEcho.svg",
+      "label": "薄く広がる余韻の波紋。水面・背景の余白へ。低いopacity",
+      "size": 0.55,
+      "colors": [
+        "#8d9bb4",
+        "#d4e1ed"
+      ],
+      "tags": [
+        "calm",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "calm/uneasyLoop",
+      "file": "calm-uneasyLoop.svg",
+      "label": "不安を示す小さな絡んだ線。頭の横の余白へ。静かな混乱",
+      "size": 0.18,
+      "colors": [
+        "#8d9bb4",
+        "#d4e1ed"
+      ],
+      "tags": [
+        "calm",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "calm/pauseDashes",
+      "file": "calm-pauseDashes.svg",
+      "label": "間を示す短いかすれ線。頭の横や広い余白へ小さく",
+      "size": 0.18,
+      "colors": [
+        "#8d9bb4",
+        "#d4e1ed"
+      ],
+      "tags": [
+        "calm",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "motion/longSwoosh",
+      "file": "motion-longSwoosh.svg",
+      "label": "長い風の弧。空・水面の余白へ。横長を維持して使う",
+      "size": 0.7,
+      "colors": [
+        "#8d9bb4",
+        "#d4e1ed"
+      ],
+      "tags": [
+        "motion",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "motion/shortDash",
+      "file": "motion-shortDash.svg",
+      "label": "短い勢いの線。手足の横の余白へ小さく。人物は保護",
+      "size": 0.23,
+      "colors": [
+        "#8d9bb4",
+        "#d4e1ed"
+      ],
+      "tags": [
+        "motion",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "motion/stopTicks",
+      "file": "motion-stopTicks.svg",
+      "label": "急停止の短いアクセント線。足元や手の横へ。肌には重ねない",
+      "size": 0.22,
+      "colors": [
+        "#8d9bb4",
+        "#d4e1ed"
+      ],
+      "tags": [
+        "motion",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "motion/impactShards",
+      "file": "motion-impactShards.svg",
+      "label": "疎らな衝撃の欠片。動作の周辺の背景に。顔を保護",
+      "size": 0.3,
+      "colors": [
+        "#8d9bb4",
+        "#d4e1ed"
+      ],
+      "tags": [
+        "motion",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "motion/windHatch",
+      "file": "motion-windHatch.svg",
+      "label": "風向きを示す疎らな斜線。空や背景の余白へ。人物を保護",
+      "size": 0.5,
+      "colors": [
+        "#8d9bb4",
+        "#d4e1ed"
+      ],
+      "tags": [
+        "motion",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "motion/softSpeed",
+      "file": "motion-softSpeed.svg",
+      "label": "柔らかな速度線の帯。動きと同じ方向に背景へ。人物を保護",
+      "size": 0.65,
+      "colors": [
+        "#8d9bb4",
+        "#d4e1ed"
+      ],
+      "tags": [
+        "motion",
+        "atmosphere"
+      ],
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    }
+  ]
+}

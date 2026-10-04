@@ -37,7 +37,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,webp}'],
         // 描き文字の書体は一度読み込めばオフラインでも使えるようにする
         runtimeCaching: [
           {

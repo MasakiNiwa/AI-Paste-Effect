@@ -15,7 +15,7 @@ export const illustrationOverlay = defineEffect({
   params: {
     asset: p.enum(ASSET_IDS, ASSET_IDS.includes('shock/lines3') ? 'shock/lines3' : ASSET_IDS[0], '素材 ID（漫画素材カタログ参照）'),
     position: p.point(0.6, 0.25, '素材の中心'),
-    size: p.num(0.03, 2, 0.25, '大きさ（短辺比。素材の幅）'),
+    size: p.num(0.03, 2, 0.25, '大きさ（短辺比。素材の幅。縦横比は元素材を維持）'),
     angle: p.num(-180, 180, 0, '傾き（度）'),
     flipX: p.bool(false, '左右反転'),
     flipY: p.bool(false, '上下反転'),
@@ -35,7 +35,8 @@ export const illustrationOverlay = defineEffect({
     g.translate(v.position.x * ctx.width, v.position.y * ctx.height);
     g.rotate((v.angle * Math.PI) / 180);
     g.scale(v.flipX ? -1 : 1, v.flipY ? -1 : 1);
-    g.drawImage(img, -px / 2, -px / 2, px, px);
+    const height = px * img.naturalHeight / img.naturalWidth;
+    g.drawImage(img, -px / 2, -height / 2, px, height);
     g.setTransform(1, 0, 0, 1, 0, 0);
     return out;
   },
