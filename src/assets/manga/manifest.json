@@ -1,0 +1,445 @@
+{
+  "pack": "manga-v1",
+  "assets": [
+    {
+      "id": "shock/burstWhite",
+      "file": "shock-burstWhite.svg",
+      "label": "白いギザギザの爆発形（衝撃・叫びの背景。キャラの後ろに大きく）",
+      "tags": [
+        "shock",
+        "surprise"
+      ],
+      "colors": [
+        "#111111",
+        "#ffffff"
+      ],
+      "size": 0.6,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "shock/lines3",
+      "file": "shock-lines3.svg",
+      "label": "頭の上に置く 3 本の太い驚き線",
+      "tags": [
+        "shock",
+        "surprise"
+      ],
+      "colors": [
+        "#111111",
+        "#ffffff"
+      ],
+      "size": 0.18,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "shock/exclaim",
+      "file": "shock-exclaim.svg",
+      "label": "手描きの「!!」",
+      "tags": [
+        "shock",
+        "surprise"
+      ],
+      "colors": [
+        "#111111",
+        "#ffffff"
+      ],
+      "size": 0.16,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "shock/spikyBalloon",
+      "file": "shock-spikyBalloon.svg",
+      "label": "トゲトゲの叫び吹き出し（中は空。描き文字と重ねる）",
+      "tags": [
+        "shock",
+        "shout"
+      ],
+      "colors": [
+        "#111111",
+        "#ffffff"
+      ],
+      "size": 0.35,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "shock/crack",
+      "file": "shock-crack.svg",
+      "label": "「ガーン」の稲妻・ひび（頭の上や横）",
+      "tags": [
+        "shock",
+        "gloom"
+      ],
+      "colors": [
+        "#ffe14d",
+        "#222222"
+      ],
+      "size": 0.25,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "shock/starPop",
+      "file": "shock-starPop.svg",
+      "label": "コミカルな衝撃の星（ポンッ・ぶつかった時）",
+      "tags": [
+        "shock",
+        "comedy"
+      ],
+      "colors": [
+        "#ffd23f",
+        "#222222"
+      ],
+      "size": 0.2,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "gloom/darkAura",
+      "file": "gloom-darkAura.svg",
+      "label": "黒いモヤ・どす黒いオーラ（キャラの後ろや周り）",
+      "tags": [
+        "gloom",
+        "dark"
+      ],
+      "colors": [
+        "#241c38",
+        "#4b3d6e"
+      ],
+      "size": 0.6,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "gloom/spiritWisp",
+      "file": "gloom-spiritWisp.svg",
+      "label": "口から抜ける魂（脱力・放心）",
+      "tags": [
+        "gloom",
+        "comedy"
+      ],
+      "colors": [
+        "#6a7ea8",
+        "#ffffff"
+      ],
+      "size": 0.22,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "gloom/rainCloud",
+      "file": "gloom-rainCloud.svg",
+      "label": "頭上の小さな雨雲（しょんぼり）",
+      "tags": [
+        "gloom",
+        "sad"
+      ],
+      "colors": [
+        "#5d6678",
+        "#7fa6d8"
+      ],
+      "size": 0.25,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "gloom/blueLines",
+      "file": "gloom-blueLines.svg",
+      "label": "青い縦線の「ガーン」背景（上から垂れる）",
+      "tags": [
+        "gloom",
+        "shock"
+      ],
+      "colors": [
+        "#25305a",
+        "#25305a"
+      ],
+      "size": 0.6,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "comedy/sweatBig",
+      "file": "comedy-sweatBig.svg",
+      "label": "大きな汗（焦り・気まずさ。頭の横に）",
+      "tags": [
+        "comedy",
+        "awkward"
+      ],
+      "colors": [
+        "#bfe6ff",
+        "#2f6db0"
+      ],
+      "size": 0.2,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "comedy/sweatTrio",
+      "file": "comedy-sweatTrio.svg",
+      "label": "小さな汗が 3 つ（あせあせ）",
+      "tags": [
+        "comedy",
+        "awkward"
+      ],
+      "colors": [
+        "#bfe6ff",
+        "#2f6db0"
+      ],
+      "size": 0.18,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "comedy/angerBig",
+      "file": "comedy-angerBig.svg",
+      "label": "大きな怒りマーク（ムカッ）",
+      "tags": [
+        "comedy",
+        "anger"
+      ],
+      "colors": [
+        "#e43b3b",
+        "#ffffff"
+      ],
+      "size": 0.18,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "comedy/steam",
+      "file": "comedy-steam.svg",
+      "label": "頭から出る湯気（ぷんすか・照れ）",
+      "tags": [
+        "comedy",
+        "anger",
+        "love"
+      ],
+      "colors": [
+        "#444444",
+        "#ffffff"
+      ],
+      "size": 0.22,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "comedy/dizzy",
+      "file": "comedy-dizzy.svg",
+      "label": "頭の周りを回る星（目が回る・ぐるぐる）",
+      "tags": [
+        "comedy",
+        "confused"
+      ],
+      "colors": [
+        "#ffcf3a",
+        "#333333"
+      ],
+      "size": 0.3,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "comedy/questionBig",
+      "file": "comedy-questionBig.svg",
+      "label": "大きな「?」（困惑・はてな）",
+      "tags": [
+        "comedy",
+        "confused"
+      ],
+      "colors": [
+        "#111111",
+        "#ffffff"
+      ],
+      "size": 0.18,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "love/heartsTrio",
+      "file": "love-heartsTrio.svg",
+      "label": "ハートが 3 つ（好き・ときめき）",
+      "tags": [
+        "love"
+      ],
+      "colors": [
+        "#ff6f9c",
+        "#ffffff"
+      ],
+      "size": 0.25,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "love/heartPound",
+      "file": "love-heartPound.svg",
+      "label": "ドキッとするハートと衝撃線",
+      "tags": [
+        "love",
+        "surprise"
+      ],
+      "colors": [
+        "#ff4f86",
+        "#ffffff"
+      ],
+      "size": 0.22,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "love/flowerRing",
+      "file": "love-flowerRing.svg",
+      "label": "少女漫画の花の輪（キャラの後ろに。恋・幸せ・美化）",
+      "tags": [
+        "love",
+        "joy"
+      ],
+      "colors": [
+        "#ffc9da",
+        "#e27c9e"
+      ],
+      "size": 0.6,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "love/bubbles",
+      "file": "love-bubbles.svg",
+      "label": "ふわふわ浮かぶ泡（夢見心地）",
+      "tags": [
+        "love",
+        "joy",
+        "calm"
+      ],
+      "colors": [
+        "#ffffff",
+        "#ffffff"
+      ],
+      "size": 0.4,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "joy/sparkleStars",
+      "file": "joy-sparkleStars.svg",
+      "label": "キラキラした星の集まり（嬉しい・輝く）",
+      "tags": [
+        "joy"
+      ],
+      "colors": [
+        "#fff3a6",
+        "#ffbf2e"
+      ],
+      "size": 0.3,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "joy/flowerPop",
+      "file": "joy-flowerPop.svg",
+      "label": "ポンポン咲く花（わーい・うれしい）",
+      "tags": [
+        "joy",
+        "comedy"
+      ],
+      "colors": [
+        "#ffd84d",
+        "#ff8a3d"
+      ],
+      "size": 0.3,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "joy/notes",
+      "file": "joy-notes.svg",
+      "label": "音符（ご機嫌・歌う）",
+      "tags": [
+        "joy"
+      ],
+      "colors": [
+        "#222222",
+        "#ffffff"
+      ],
+      "size": 0.25,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "motion/whoosh",
+      "file": "motion-whoosh.svg",
+      "label": "ヒュッと動く弧の線（振り向き・素早い動き）",
+      "tags": [
+        "motion"
+      ],
+      "colors": [
+        "#222222",
+        "#ffffff"
+      ],
+      "size": 0.35,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "motion/impactRing",
+      "file": "motion-impactRing.svg",
+      "label": "ドンッという衝撃の輪と破片（着地・パンチ）",
+      "tags": [
+        "motion",
+        "shock"
+      ],
+      "colors": [
+        "#222222",
+        "#ffffff"
+      ],
+      "size": 0.4,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "motion/dustCloud",
+      "file": "motion-dustCloud.svg",
+      "label": "足元の土煙（ズザーッ・急停止・ダッシュ）",
+      "tags": [
+        "motion",
+        "comedy"
+      ],
+      "colors": [
+        "#8a7f70",
+        "#efe8dc"
+      ],
+      "size": 0.35,
+      "defaultBlend": "normal",
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    }
+  ]
+}

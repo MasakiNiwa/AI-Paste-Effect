@@ -20,8 +20,9 @@
 ## 特徴
 
 - エフェクトの選択や数値調整の UI はありません。演出の設計はすべて AI に任せます
-- 色調・光・粒子・漫画表現・リアクション/描き文字・質感・写真の質感・ぼかし/歪み・たまにエフェクトの 54 種類のエフェクト
+- 色調・光・粒子・漫画表現・リアクション/描き文字・漫画素材/演出プリセット・質感・写真の質感・ぼかし/歪み・たまにエフェクトの 56 種類のエフェクト
 - 「編集」タブで、AI の案を手で調整（表示・強さ・色・位置・追加/削除/並べ替え）。調整内容は修正依頼にも反映
+- 手描きの漫画素材パック（驚き線・汗・ガーン・花・ハートなど 26 素材）と、「びっくり」「気まずい」「大袈裟ドラマ」などの演出プリセット
 - AI に方向性の違う案を複数作ってもらい、結果画面のサムネイルで切り替えて見比べられる
 - AI は演出のねらいを自由に語ったうえで JSON を返し、その語りはアプリ内に「AI のコメント」として表示
 - PWA 対応（ホーム画面に追加してアプリとして使える／オフライン起動）
@@ -38,6 +39,8 @@ npm run build     # 型チェック + 本番ビルド（dist/）
 ```
 
 技術スタック: Vite / React / TypeScript / Tailwind CSS / Zustand / PixiJS + pixi-filters / Rough.js / Google Fonts / JSON5 / vite-plugin-pwa
+
+漫画素材は `scripts/gen-manga-assets.mjs` で生成した SVG（MIT）で、`src/assets/manga/manifest.json` に ID・タグ・ライセンスを記録しています。
 
 `src/vendor/tamani-effect/` には [TaMaNi-Effect](https://github.com/MasakiNiwa/TaMaNi-Effect)（MIT License）のエフェクトを取り込んでいます。
 

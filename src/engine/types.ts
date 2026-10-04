@@ -30,6 +30,7 @@ export const CATEGORIES = {
   particle: '粒子・装飾',
   manga: '漫画表現',
   reaction: 'リアクション・描き文字',
+  illustration: '漫画素材・演出プリセット',
   texture: '質感',
   photo: '写真の質感',
   distortion: 'ぼかし・歪み',
