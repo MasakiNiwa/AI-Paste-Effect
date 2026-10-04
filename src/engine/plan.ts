@@ -110,18 +110,23 @@ function tryParse(json: string): unknown {
   }
 }
 
+const isPlanLike = (v: unknown): v is Record<string, unknown> =>
+  isObj(v) && (Array.isArray(v.blocks) || Array.isArray(v.layers) || Array.isArray(v.variations));
+
 interface Extraction {
-  value?: unknown;
+  /** 見つかった演出プラン（複数案の場合は複数） */
+  values: unknown[];
   /** JSON 以外の部分（AI の語り） */
   comment?: string;
   error?: string;
   json?: string;
 }
 
-/** AI の返答から演出プランの JSON と、それ以外の語りを取り出す */
-export function extractPlan(text: string): Extraction {
+/** AI の返答から演出プランの JSON（複数可）と、それ以外の語りを取り出す */
+export function extractPlans(text: string): Extraction {
   const list = candidates(text);
-  if (list.length === 0) return { error: 'JSON（{ … }）が見つかりません' };
+  if (list.length === 0) return { values: [], error: 'JSON（{ … }）が見つかりません' };
+  const found: { c: Candidate; v: unknown }[] = [];
   let firstObj: { c: Candidate; v: unknown } | undefined;
   let firstError: string | undefined;
   for (const c of list) {
@@ -129,25 +134,28 @@ export function extractPlan(text: string): Extraction {
       const v = tryParse(c.json);
       if (!isObj(v)) continue;
       firstObj ??= { c, v };
-      if (Array.isArray(v.blocks) || Array.isArray(v.layers)) {
-        firstObj = { c, v };
-        break;
-      }
+      if (isPlanLike(v)) found.push({ c, v });
     } catch (e) {
       firstError ??= `JSON として読めません: ${(e as Error).message}`;
     }
   }
-  if (!firstObj) return { error: firstError ?? 'JSON（{ … }）が見つかりません' };
-  const { c, v } = firstObj;
-  const comment = (text.slice(0, c.from) + '\n\n' + text.slice(c.to)).replace(/\n{3,}/g, '\n\n').trim();
-  return { value: v, json: c.json, comment: comment || undefined };
+  const use = found.length > 0 ? found : firstObj ? [firstObj] : [];
+  if (use.length === 0) return { values: [], error: firstError ?? 'JSON（{ … }）が見つかりません' };
+  // 使った JSON 部分を取り除いた残りが語り
+  let comment = '';
+  let pos = 0;
+  for (const { c } of [...use].sort((x, y) => x.c.from - y.c.from)) {
+    comment += text.slice(pos, c.from) + '\n\n';
+    pos = c.to;
+  }
+  comment = (comment + text.slice(pos)).replace(/\n{3,}/g, '\n\n').trim();
+  return { values: use.map((u) => u.v), json: use[0].c.json, comment: comment || undefined };
 }
 
 /** 文章やコードフェンスに囲まれていても、演出プランの JSON 部分を取り出す */
 export function extractJsonText(text: string): string | undefined {
-  return extractPlan(text).json;
+  return extractPlans(text).json;
 }
-
 
 const num01 = (v: unknown, def: number) => {
   const n = typeof v === 'number' ? v : typeof v === 'string' ? Number(v) : NaN;
@@ -174,14 +182,46 @@ function normalizeBlend(v: unknown, def: BlendMode, path: string, warn: (m: stri
   return def;
 }
 
+export interface ReplyResult {
+  /** 読み込めた案（1 案のみの返答なら 1 つ）。各案の comment は返答全体の語り */
+  variants: ParseResult[];
+  comment?: string;
+  /** 1 案も読めなかった時のエラー */
+  errors: string[];
+}
+
+/** 複数案のまとめ形式 {"variations": [plan, …]} を展開する。外側の共通項目は各案に引き継ぐ */
+function expandVariations(v: unknown): unknown[] {
+  if (!isObj(v) || !Array.isArray(v.variations)) return [v];
+  const { variations, ...common } = v;
+  return (variations as unknown[]).map((x) => (isObj(x) ? { ...common, ...x } : x));
+}
+
+/** AI の返答全体を解析する（複数案対応） */
+export function parseReply(text: string): ReplyResult {
+  if (!text.trim()) return { variants: [], errors: ['JSON が空です'] };
+  const { values, error, comment } = extractPlans(text);
+  if (error) return { variants: [], errors: [error], comment };
+  const all = values.flatMap(expandVariations).map((root) => ({ ...compileRoot(root), comment }));
+  const ok = all.filter((r) => r.errors.length === 0);
+  if (ok.length === 0) return { variants: [], errors: all[0]?.errors ?? ['描画できる案がありません'], comment };
+  if (ok.length < all.length) {
+    const skipped = all.map((r, i) => (r.errors.length ? i + 1 : 0)).filter(Boolean);
+    ok[0].warnings.unshift(`案 ${skipped.join('・')} は読み込めなかったので除外しました`);
+  }
+  return { variants: ok, errors: [], comment };
+}
+
+/** 1 案目だけを解析する（単一案として扱う場合） */
 export function parsePlan(text: string): ParseResult {
+  const r = parseReply(text);
+  return r.variants[0] ?? { errors: r.errors, warnings: [], comment: r.comment };
+}
+
+function compileRoot(value: unknown): ParseResult {
   const errors: string[] = [];
   const warnings: string[] = [];
   const warn = (m: string) => warnings.push(m);
-
-  if (!text.trim()) return { errors: ['JSON が空です'], warnings };
-  const { value, error, comment } = extractPlan(text);
-  if (error) return { errors: [error], warnings };
   if (!isObj(value)) return { errors: ['JSON の一番外側はオブジェクト { … } である必要があります'], warnings };
 
   const root = value;
@@ -244,7 +284,6 @@ export function parsePlan(text: string): ParseResult {
       layers,
     },
     raw: root,
-    comment,
     errors,
     warnings,
   };

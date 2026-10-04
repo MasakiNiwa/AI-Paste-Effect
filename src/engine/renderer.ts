@@ -157,6 +157,10 @@ export async function renderPlan(original: HTMLCanvasElement, plan: CompiledPlan
       const out = await layer.effect.render(ctx, layer.params);
       if (mask) {
         const og = ctx2d(out);
+        // エフェクトが座標変換や不透明度を残したままのことがあるので、必ず初期状態に戻してから掛ける
+        og.setTransform(1, 0, 0, 1, 0, 0);
+        og.globalAlpha = 1;
+        og.filter = 'none';
         og.globalCompositeOperation = 'destination-in';
         og.imageSmoothingEnabled = true;
         og.drawImage(maskToCanvas(mask), 0, 0, width, height);

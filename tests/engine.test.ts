@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { parseColor } from '../src/engine/color';
 import { EFFECTS, findEffect } from '../src/engine/effects';
 import { EXAMPLE_PLAN_TEXT } from '../src/engine/example';
-import { extractJsonText, parsePlan } from '../src/engine/plan';
+import { extractJsonText, parsePlan, parseReply } from '../src/engine/plan';
 import { buildInitialPrompt, buildRevisionPrompt } from '../src/engine/prompt';
 import { buildMask, normalizeRegions } from '../src/engine/region';
 
@@ -117,6 +117,35 @@ describe('plan parsing', () => {
   });
 });
 
+describe('multiple variants', () => {
+  const plan = (title: string, effect = 'vignette') => JSON.stringify({ title, layers: [{ effect }] });
+  it('reads every ```json block as a variant and keeps the prose', () => {
+    const text = `3 案です。\n\n案1\n\`\`\`json\n${plan('静か')}\n\`\`\`\n案2\n\`\`\`json\n${plan('派手', 'burst')}\n\`\`\`\n案3\n\`\`\`json\n${plan('レトロ', 'oldFilm')}\n\`\`\`\nお好みでどうぞ`;
+    const r = parseReply(text);
+    expect(r.variants.map((v) => v.plan?.title)).toEqual(['静か', '派手', 'レトロ']);
+    expect(r.variants[1].plan?.layers[0].effect.id).toBe('burst');
+    expect(r.comment).toContain('3 案です');
+    expect(r.comment).toContain('お好みでどうぞ');
+    expect(r.comment).not.toContain('layers');
+  });
+  it('expands {"variations": [...]} and inherits shared fields', () => {
+    const r = parseReply(
+      JSON.stringify({
+        format: 'ai-paste-effect',
+        protect: [{ shape: 'ellipse', cx: 0.5, cy: 0.3, rx: 0.1, ry: 0.1 }],
+        variations: [{ title: 'A', layers: [{ effect: 'blur' }] }, { title: 'B', layers: [{ effect: 'bloom' }] }],
+      }),
+    );
+    expect(r.variants.length).toBe(2);
+    expect(r.variants[1].plan?.layers[0].protect.length).toBe(1);
+  });
+  it('drops unreadable variants with a warning', () => {
+    const r = parseReply(`\`\`\`json\n${plan('ok')}\n\`\`\`\n\`\`\`json\n{"layers": [{"effect": "nope"}]}\n\`\`\``);
+    expect(r.variants.length).toBe(1);
+    expect(r.variants[0].warnings[0]).toContain('案 2');
+  });
+});
+
 describe('text params', () => {
   it('accepts strings, truncates long text and warns', () => {
     const r = parsePlan(JSON.stringify({ layers: [{ effect: 'soundText', params: { text: 'ドドドドドドドドドドドドドドド', font: 'nope' } }] }));
@@ -157,6 +186,10 @@ describe('prompt', () => {
   it('asks the AI to talk freely only when enabled', () => {
     expect(buildInitialPrompt({ talk: true })).toContain('自由に語って');
     expect(buildInitialPrompt({ talk: false })).not.toContain('自由に語って');
+  });
+  it('asks for several variants when configured', () => {
+    expect(buildInitialPrompt({ talk: true, variants: 3 })).toContain('3 案');
+    expect(buildRevisionPrompt({ currentPlan: {}, includeSpec: false, talk: false, variants: 2, picked: [2, 3] })).toContain('全 3 案のうち、案 2');
   });
   it('includes current plan and warnings in revision prompt', () => {
     const p = buildRevisionPrompt({ currentPlan: { a: 1 }, warnings: ['W1'], includeSpec: false, talk: true });

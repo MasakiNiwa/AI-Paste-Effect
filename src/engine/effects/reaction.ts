@@ -260,7 +260,7 @@ export const soundText = defineEffect({
   category: 'reaction',
   kind: 'overlay',
   defaultBlend: 'normal',
-  description: `漫画の描き文字・擬音語（ドーン!、ゴゴゴ、キラーン、しーん など）。font: ${FONT_KEYS.map((k) => `${k}（${MANGA_FONTS[k].note}）`).join(' / ')}。キャラや顔に重ならない余白に置く。`,
+  description: `漫画の描き文字・擬音語（ドーン!、ゴゴゴ、キラーン、しーん など）。font: ${FONT_KEYS.map((k) => `${k}（${MANGA_FONTS[k].note}）`).join(' / ')}。キャラや顔に重ならない余白に置く。置き場所は position で決まるので region は付けなくてよい（付ける場合は文字全体が入る大きさに）。`,
   params: {
     text: p.text('ドーン!', '文字（短く。改行は不可）', 12),
     font: p.enum(FONT_KEYS, 'impact', '書体'),

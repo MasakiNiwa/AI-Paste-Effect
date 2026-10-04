@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react';
 import { ChevronDown, Download, Hand, Loader2, MessageCircle, Share2, SlidersHorizontal, Sparkles } from 'lucide-react';
-import { useAppliedParse } from '../hooks/usePipeline';
+import { useAppliedParse, useAppliedReply } from '../hooks/usePipeline';
 import { canvasToBlob, downloadBlob, extensionOf } from '../lib/image';
 import { useOutput } from '../store/output';
 import { useSession } from '../store/session';
@@ -154,6 +154,44 @@ function CompareToggle() {
   );
 }
 
+/** 複数案の切り替え。結果画像のすぐ下にサムネイル付きで横に並べる */
+function VariantPicker() {
+  const reply = useAppliedReply();
+  const variant = useSession((s) => s.variant);
+  const setVariant = useSession((s) => s.setVariant);
+  const thumbs = useOutput((s) => s.thumbs);
+  const original = useOutput((s) => s.original);
+  if (reply.variants.length < 2) return null;
+  const current = Math.min(variant, reply.variants.length - 1);
+  return (
+    <div className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1" role="tablist" aria-label="演出の案">
+      {reply.variants.map((v, i) => (
+        <button
+          key={i}
+          type="button"
+          role="tab"
+          aria-selected={i === current}
+          onClick={() => setVariant(i)}
+          className={`flex w-40 shrink-0 snap-start items-center gap-2 rounded-xl border p-1.5 text-left transition ${
+            i === current ? 'border-accent bg-accent/10 ring-1 ring-accent' : 'border-line bg-surface hover:bg-surface-2'
+          }`}
+        >
+          <span className="checker relative size-11 shrink-0 overflow-hidden rounded-lg">
+            {(thumbs[i] ?? original?.url) && (
+              <img src={thumbs[i] ?? original!.url} alt="" className={`size-full object-cover ${thumbs[i] ? '' : 'opacity-40'}`} />
+            )}
+            {!thumbs[i] && <Loader2 className="absolute inset-0 m-auto size-4 animate-spin text-muted" />}
+          </span>
+          <span className="min-w-0">
+            <span className={`block text-[11px] font-bold ${i === current ? 'text-accent' : 'text-muted'}`}>案 {i + 1}</span>
+            <span className="line-clamp-2 block text-xs leading-snug">{v.plan?.title ?? '（無題）'}</span>
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 /** AI の語りを軽く整形して表示する（見出し記号や強調記号は外す） */
 function AiComment({ text }: { text: string }) {
   const [open, setOpen] = useState(false);
@@ -222,6 +260,7 @@ export function Preview({ fill = false }: { fill?: boolean }) {
       <div className={fill ? 'min-h-0 flex-1' : ''}>
         <Viewer fill={fill} />
       </div>
+      {result && <VariantPicker />}
       <div className="flex flex-wrap items-center gap-2">
         <CompareToggle />
         <div className="ml-auto flex gap-2">

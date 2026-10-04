@@ -20,6 +20,8 @@ export interface Settings {
   compareMode: CompareMode;
   /** AI に JSON の前に自由に語ってもらう */
   aiTalk: boolean;
+  /** AI に作ってもらう案の数 */
+  variantCount: number;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -31,6 +33,7 @@ export const DEFAULT_SETTINGS: Settings = {
   rememberJson: true,
   compareMode: 'hold',
   aiTalk: true,
+  variantCount: 3,
 };
 
 interface SettingsStore extends Settings {

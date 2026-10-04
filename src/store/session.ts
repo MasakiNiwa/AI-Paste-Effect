@@ -12,6 +12,9 @@ interface SessionStore {
   imageFile: Blob | null;
   imageName: string;
   setImageFile: (file: Blob | null, name?: string) => void;
+  /** 複数案のうち選んでいる案（0 始まり） */
+  variant: number;
+  setVariant: (i: number) => void;
   /** 新しいイラストで始め直す */
   clear: () => void;
 }
@@ -21,18 +24,21 @@ export const useSession = create<SessionStore>()(
     (set, get) => ({
       jsonText: '',
       appliedText: '',
-      setJsonText: (jsonText) => set(useSettings.getState().autoApply ? { jsonText, appliedText: jsonText } : { jsonText }),
-      apply: () => set({ appliedText: get().jsonText }),
+      setJsonText: (jsonText) =>
+        set(useSettings.getState().autoApply && jsonText !== get().appliedText ? { jsonText, appliedText: jsonText, variant: 0 } : { jsonText }),
+      apply: () => set({ appliedText: get().jsonText, variant: 0 }),
+      variant: 0,
+      setVariant: (variant) => set({ variant }),
       imageFile: null,
       imageName: '',
       setImageFile: (imageFile, imageName = '') => set({ imageFile, imageName }),
-      clear: () => set({ jsonText: '', appliedText: '', imageFile: null, imageName: '' }),
+      clear: () => set({ jsonText: '', appliedText: '', imageFile: null, imageName: '', variant: 0 }),
     }),
     {
       name: 'ai-paste-effect:session',
       partialize: (s) => {
         const keep = useSettings.getState().rememberJson;
-        return { jsonText: keep ? s.jsonText : '', appliedText: keep ? s.appliedText : '' };
+        return { jsonText: keep ? s.jsonText : '', appliedText: keep ? s.appliedText : '', variant: keep ? s.variant : 0 };
       },
     },
   ),

@@ -125,6 +125,13 @@ export default function Settings() {
       <Card>
         <h2 className="mb-3 text-xs font-bold tracking-wider text-muted">AI とのやりとり</h2>
         <div className="divide-y divide-line">
+          <Row title="AI に作ってもらう案の数" desc="複数にすると、方向性の違う案を一度に作ってもらい、結果画面で切り替えて見比べられます。">
+            <Segmented<number>
+              value={s.variantCount}
+              onChange={(variantCount) => s.set({ variantCount })}
+              options={[1, 2, 3, 4].map((n) => ({ value: n, label: `${n} 案` }))}
+            />
+          </Row>
           <Row title="AI に自由に語ってもらう" desc="オンだと、AI が感想や演出のねらいを話してから JSON を返します。オフだと JSON だけを返します。">
             <Toggle label="AI に自由に語ってもらう" checked={s.aiTalk} onChange={(aiTalk) => s.set({ aiTalk })} />
           </Row>
