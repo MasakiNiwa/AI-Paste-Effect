@@ -125,18 +125,20 @@ export interface RevisionOptions extends PromptOptions {
   currentPlan: unknown;
   /** 複数案から選んだ場合: [選んだ案の番号(1始まり), 全体の案数] */
   picked?: [number, number];
+  /** アプリ上で手動調整したものか */
+  edited?: boolean;
   warnings?: string[];
   includeSpec: boolean;
 }
 
-export function buildRevisionPrompt({ currentPlan, warnings = [], includeSpec, talk, variants = 1, picked }: RevisionOptions): string {
+export function buildRevisionPrompt({ currentPlan, warnings = [], includeSpec, talk, variants = 1, picked, edited }: RevisionOptions): string {
   const warn =
     warnings.length > 0
       ? `\n## アプリが出した警告（直せるものは直してください）\n${warnings.slice(0, 20).map((w) => `- ${w}`).join('\n')}\n`
       : '';
   return `# AI Paste Effect 演出プランの修正依頼
 
-あなたが作った演出プラン JSON（下記）をアプリで画像に適用しました。${picked && picked[1] > 1 ? `\n全 ${picked[1]} 案のうち、案 ${picked[0]} を選びました（下記がその案です）。` : ''}
+あなたが作った演出プラン JSON（下記）をアプリで画像に適用しました。${picked && picked[1] > 1 ? `\n全 ${picked[1]} 案のうち、案 ${picked[0]} を選びました（下記がその案です）。` : ''}${edited ? '\nさらに、アプリ上で私が手動で調整しています（下記は調整後の JSON です。調整の意図をくみ取ってください）。' : ''}
 結果画像を添付している場合は、それが現在の仕上がりです。
 下の【修正の要望】に合わせて、修正版の JSON を全体を省略せずに返してください（各案とも完全な JSON で）。
 画像そのものは描き変えられないので、演出だけで調整してください。

@@ -49,6 +49,7 @@ function PromptStep() {
         talk,
         variants,
         picked: [Math.min(picked, reply.variants.length - 1) + 1, reply.variants.length],
+        edited: applied.edited,
       }),
     );
     toast(ok ? '修正依頼をコピーしました' : 'コピーできませんでした', ok ? 'ok' : 'err');

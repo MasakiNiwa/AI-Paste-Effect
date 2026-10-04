@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { parseReply, type ParseResult, type ReplyResult } from '../engine/plan';
+import { compilePlan, parseReply, type ParseResult, type ReplyResult } from '../engine/plan';
 import { fitImage, renderPlan } from '../engine/renderer';
 import { canvasToDecodedUrl, loadImageFile } from '../lib/image';
 import { useOutput, type Picture } from '../store/output';
@@ -35,8 +35,18 @@ export function pickVariant(reply: ReplyResult, index: number): ParseResult {
 export const useLiveReply = () => parseCached(useSession((s) => s.jsonText));
 /** 適用中の返答（全案） */
 export const useAppliedReply = () => parseCached(useSession((s) => s.appliedText));
-/** 適用中の、選んでいる案（描画・修正依頼用） */
-export const useAppliedParse = () => pickVariant(useAppliedReply(), useSession((s) => s.variant));
+const compiledEdits = new WeakMap<object, ParseResult>();
+
+/** 適用中の、選んでいる案（描画・修正依頼用）。手動編集があればそちらを使う */
+export function useAppliedParse(): ParseResult {
+  const reply = useAppliedReply();
+  const variant = useSession((s) => s.variant);
+  const edit = useSession((s) => s.edits[variant]);
+  if (!edit) return pickVariant(reply, variant);
+  let r = compiledEdits.get(edit);
+  if (!r) compiledEdits.set(edit, (r = { ...compilePlan(edit), comment: reply.comment, edited: true }));
+  return r;
+}
 
 const swap = (prev: Picture | null, next: Picture | null) => {
   if (prev && prev.url !== next?.url) setTimeout(() => URL.revokeObjectURL(prev.url), 1000);

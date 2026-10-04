@@ -22,6 +22,8 @@ export interface Settings {
   aiTalk: boolean;
   /** AI に作ってもらう案の数 */
   variantCount: number;
+  /** 結果画面に AI のコメントを表示する（アプリ上の表示だけ。プロンプトは変わらない） */
+  showAiComment: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -34,6 +36,7 @@ export const DEFAULT_SETTINGS: Settings = {
   compareMode: 'hold',
   aiTalk: true,
   variantCount: 3,
+  showAiComment: true,
 };
 
 interface SettingsStore extends Settings {

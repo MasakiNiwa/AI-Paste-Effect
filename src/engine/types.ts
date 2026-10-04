@@ -31,6 +31,7 @@ export const CATEGORIES = {
   manga: '漫画表現',
   reaction: 'リアクション・描き文字',
   texture: '質感',
+  photo: '写真の質感',
   distortion: 'ぼかし・歪み',
   tamani: 'たまにエフェクト',
 } as const;

@@ -11,6 +11,7 @@ import * as particle from './particle';
 import * as manga from './manga';
 import * as reaction from './reaction';
 import * as texture from './texture';
+import * as photo from './photo';
 import * as distortion from './distortion';
 import { TAMANI_EFFECTS } from './tamani';
 
@@ -23,6 +24,7 @@ export const EFFECTS: AnyEffect[] = [
   ...Object.values(manga),
   ...Object.values(reaction),
   ...Object.values(texture),
+  ...Object.values(photo),
   ...Object.values(distortion),
   ...TAMANI_EFFECTS,
 ] as EffectDefinition<ParamSchema>[] as AnyEffect[];

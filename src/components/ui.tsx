@@ -32,3 +32,18 @@ export function StepHeader({ n, title, hint }: { n: number; title: string; hint?
     </div>
   );
 }
+
+export function Switch({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label: string }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      onClick={() => onChange(!checked)}
+      className={`relative h-7 w-12 rounded-full transition ${checked ? 'bg-accent' : 'bg-line'}`}
+    >
+      <span className={`absolute top-1 left-1 size-5 rounded-full bg-white shadow transition ${checked ? 'translate-x-5' : ''}`} />
+    </button>
+  );
+}
