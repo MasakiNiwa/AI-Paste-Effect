@@ -59,6 +59,7 @@ export function usePipeline() {
   const maxSize = useSettings((s) => s.maxSize);
   const parsed = useAppliedParse();
   const reply = useAppliedReply();
+  const strength = useSession((s) => s.strength);
   const original = useOutput((s) => s.original);
   const out = useOutput((s) => s.set);
 
@@ -92,7 +93,7 @@ export function usePipeline() {
     }
     out({ rendering: true });
     const timer = setTimeout(() => {
-      renderPlan(original.canvas, parsed.plan!)
+      renderPlan(original.canvas, parsed.plan!, strength)
         .then(async ({ canvas, errors }) => {
           if (id !== renderId.current) return;
           // デコードし終えてから差し替える（白いチラつき防止）
@@ -104,7 +105,7 @@ export function usePipeline() {
         .finally(() => id === renderId.current && out({ rendering: false }));
     }, 250);
     return () => clearTimeout(timer);
-  }, [original, parsed, out]);
+  }, [original, parsed, strength, out]);
 
   // 複数案のサムネイル（小さく描いて切り替え用に並べる）
   const thumbId = useRef(0);

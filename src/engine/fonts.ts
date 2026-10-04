@@ -8,7 +8,7 @@ export const MANGA_FONTS = {
   pop: { family: 'Mochiy Pop One', note: '丸くて太いポップ体。ワクワク・ポン' },
   rock: { family: 'RocknRoll One', note: '勢いのある太字。ゴゴゴ・ザッ' },
   brush: { family: 'Yuji Boku', note: '筆文字。ズーン・しーん・和風' },
-  cute: { family: 'Hachi Maru Pop', note: '丸文字の手書き。きゅん・ドキドキ' },
+  cute: { family: 'Hachi Maru Pop', note: '丸文字の手書き。きゅん・ドキドキ。全角の「！」「？」は点がハートになるので、甘い場面以外では半角の ! ? を使う' },
   outline: { family: 'Rampart One', note: '立体的な袋文字。タイトル・強調' },
   retro: { family: 'Reggae One', note: 'レトロで個性的。ギャグ・ドヤァ' },
   dot: { family: 'DotGothic16', note: 'ドット文字。ゲーム・電子音' },

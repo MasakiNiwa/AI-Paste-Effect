@@ -157,7 +157,7 @@
     {
       "id": "gloom/blueLines",
       "file": "gloom-blueLines.svg",
-      "label": "青い縦線の「ガーン」背景（上から垂れる）",
+      "label": "青い縦線の「ガーン」背景（キャラの頭上〜背景に幅広く大きく置く。上下の端は自然に消える）",
       "tags": [
         "gloom",
         "shock"

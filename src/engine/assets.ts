@@ -76,6 +76,6 @@ export function assetCatalog(): string {
     groups.set(g, [...(groups.get(g) ?? []), a]);
   }
   return [...groups.entries()]
-    .map(([g, list]) => `- ${g}: ${list.map((a) => `"${a.id}"（${a.label}）`).join(' / ')}`)
+    .map(([g, list]) => `- ${g}: ${list.map((a) => `"${a.id}"（${a.label}。目安 size ${a.size}）`).join(' / ')}`)
     .join('\n');
 }

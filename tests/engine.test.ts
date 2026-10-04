@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { parseColor } from '../src/engine/color';
 import { EFFECTS, findEffect } from '../src/engine/effects';
 import { EXAMPLE_PLAN_TEXT } from '../src/engine/example';
-import { extractJsonText, parsePlan, parseReply } from '../src/engine/plan';
+import { extractJsonText, parsePlan, parseReply, scaleOpacity } from '../src/engine/plan';
 import { buildInitialPrompt, buildRevisionPrompt } from '../src/engine/prompt';
 import { buildMask, normalizeRegions } from '../src/engine/region';
 
@@ -228,5 +228,30 @@ describe('manga assets and presets', async () => {
   });
   it('lists the asset catalog in the prompt', () => {
     expect(buildInitialPrompt()).toContain('漫画素材カタログ');
+  });
+});
+
+describe('intensity', () => {
+  it('reads words and numbers, defaults to 1', () => {
+    const at = (v: unknown) => parsePlan(JSON.stringify({ intensity: v, layers: [{ effect: 'blur' }] })).plan?.intensity;
+    expect(at(undefined)).toBe(1);
+    expect(at('subtle')).toBeLessThan(0.6);
+    expect(at('strong')).toBe(1);
+    expect(at(5)).toBe(2);
+  });
+  it('scales opacity down linearly and up toward 1', () => {
+    expect(scaleOpacity(0.6, 1)).toBeCloseTo(0.6);
+    expect(scaleOpacity(0.6, 0.5)).toBeCloseTo(0.3);
+    expect(scaleOpacity(0.6, 0)).toBe(0);
+    expect(scaleOpacity(0.6, 1.5)).toBeCloseTo(0.8);
+    expect(scaleOpacity(0.6, 2)).toBeCloseTo(1);
+  });
+  it('tells the AI about the app-side strength and the directing guidelines', () => {
+    const p = buildRevisionPrompt({ currentPlan: {}, includeSpec: false, talk: true, strength: 0.4 });
+    expect(p).toContain('40%');
+    const init = buildInitialPrompt();
+    expect(init).toContain('演出の心得');
+    expect(init).toContain('intensity');
+    expect(init).toContain('awkward（静かな気まずさ）= ');
   });
 });
