@@ -9,6 +9,12 @@ const GROUP_LABELS: Record<string, string> = {
   love: '恋・ときめき',
   joy: '喜び',
   motion: '勢い・動き',
+  calm: '静けさ・余韻',
+  texture: '質感・かすれ',
+  frame: '縁飾り',
+  light: '光',
+  paint: 'にじみ',
+  manga: '漫画の背景',
 };
 
 /** 漫画素材をサムネイルで選ぶ。pack は今選ばれている絵柄のセット */

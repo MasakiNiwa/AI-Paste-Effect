@@ -165,6 +165,22 @@ export function assetPreviewUrl(a: AssetMeta): string {
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(assetSvg(a, a.colors[0], a.colors[1])!)}`;
 }
 
+/** SVG の viewBox（優先）または寸法から縦横比を求める。旧素材は正方形。 */
+export function svgAspectRatio(svg: string): number {
+  const root = /<svg\b[^>]*>/i.exec(svg)?.[0] ?? '';
+  const viewBox = /\bviewBox\s*=\s*["']([^"']+)["']/i.exec(root)?.[1];
+  if (viewBox) {
+    const values = viewBox.trim().split(/[\s,]+/).map(Number);
+    if (values.length === 4 && values.every(Number.isFinite) && values[2] > 0 && values[3] > 0) return values[2] / values[3];
+  }
+  const dimension = (name: string) => {
+    const value = new RegExp(`\\b${name}\\s*=\\s*["']([0-9.]+)(?:px)?["']`, 'i').exec(root)?.[1];
+    return value ? Number(value) : 0;
+  };
+  const w = dimension('width'), h = dimension('height');
+  return w > 0 && h > 0 && Number.isFinite(w / h) ? w / h : 1;
+}
+
 const images = new Map<string, Promise<HTMLImageElement>>();
 
 /** 色を差し替えた素材を、指定ピクセルサイズで描ける画像として読み込む */
@@ -174,14 +190,18 @@ export function loadAssetImage(a: AssetMeta, c1: string, c2: string, px: number)
   const key = a.kind === 'svg' ? `${a.pack}:${a.id}|${c1}|${c2}|${size}` : `${a.pack}:${a.id}`;
   if (!images.has(key)) {
     let url: string;
+    let blobUrl = false;
     if (a.kind === 'svg') {
       // 幅・高さの指定を描画サイズに置き換える（無ければ足す）
-      let svg = assetSvg(a, c1, c2)!.replace(/<svg\b([^>]*)>/i, (_, attrs: string) => {
-        const rest = attrs.replace(/\s(width|height)="[^"]*"/g, '');
-        return `<svg${rest} width="${size}" height="${size}">`;
+      const raw = assetSvg(a, c1, c2)!;
+      const height = Math.max(1, Math.round(size / svgAspectRatio(raw)));
+      let svg = raw.replace(/<svg\b([^>]*)>/i, (_, attrs: string) => {
+        const rest = attrs.replace(/\s(width|height)=["'][^"']*["']/gi, '');
+        return `<svg${rest} width="${size}" height="${height}">`;
       });
       if (!/viewBox=/i.test(svg)) svg = svg.replace('<svg', '<svg viewBox="0 0 200 200"');
       url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+      blobUrl = true;
     } else {
       url = imageFiles[imagePath(a)];
     }
@@ -195,7 +215,7 @@ export function loadAssetImage(a: AssetMeta, c1: string, c2: string, px: number)
           images.delete(key);
           throw e;
         },
-      ),
+      ).finally(() => { if (blobUrl) URL.revokeObjectURL(url); }),
     );
     if (images.size > 160) images.delete(images.keys().next().value!);
   }

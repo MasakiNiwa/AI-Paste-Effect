@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ALL_ASSETS, assetCatalog, assetSvg, findAsset, variantsOf } from '../src/engine/assets';
+import { ALL_ASSETS, assetCatalog, assetSvg, findAsset, variantsOf, svgAspectRatio } from '../src/engine/assets';
 import { parsePlan } from '../src/engine/plan';
 
 describe('delicate illustration pack integration', () => {
@@ -31,5 +31,33 @@ describe('delicate illustration pack integration', () => {
       expect(svg).toContain('#123456');
       expect(svg).not.toMatch(/__C[12]__|<script|href\s*=/i);
     }
+  });
+});
+
+describe('atmosphere pack integration', () => {
+  const pack = ALL_ASSETS.filter((a) => a.pack === 'atmosphere');
+  it('discovers 36 new IDs and accepts them in plans without warnings', () => {
+    expect(pack).toHaveLength(36);
+    for (const a of pack) {
+      expect(variantsOf(a.id)).toHaveLength(1);
+      expect(assetCatalog()).toContain(`"${a.id}"`);
+      const result = parsePlan(JSON.stringify({ layers: [{ effect: 'illustrationOverlay', params: { asset: a.id } }] }));
+      expect(result.errors).toEqual([]);
+      expect(result.warnings).toEqual([]);
+      expect(assetSvg(a, '#123456', '#abcdef')).not.toMatch(/__C[12]__|<script|href\s*=/i);
+    }
+  });
+});
+
+
+describe('SVG aspect ratios', () => {
+  it('preserves wide and tall viewBoxes, including single quotes and commas', () => {
+    expect(svgAspectRatio('<svg viewBox="0 0 320 120">')).toBeCloseTo(8/3);
+    expect(svgAspectRatio("<svg viewBox='10,20,72,280'>")).toBeCloseTo(72/280);
+    expect(svgAspectRatio('<svg width="320" height="100" viewBox="0 0 200 200">')).toBe(1);
+  });
+  it('falls back to absolute dimensions and safely defaults malformed values', () => {
+    expect(svgAspectRatio("<svg width='300px' height='100px'>")).toBe(3);
+    for (const s of ['<svg>', '<svg viewBox="0 0 200 0">', '<svg viewBox="0 0 NaN 20">', '<svg width="100%" height="50%">']) expect(svgAspectRatio(s)).toBe(1);
   });
 });
