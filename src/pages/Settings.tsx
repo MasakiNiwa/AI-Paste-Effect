@@ -3,6 +3,8 @@ import { RotateCcw } from 'lucide-react';
 import { Button, Card, Switch as Toggle } from '../components/ui';
 import { useToast } from '../components/Toast';
 import { ALL_ASSETS, PACKS, assetPreviewUrl } from '../engine/assets';
+import { gpuInfo, type GpuMode } from '../engine/gpu';
+import { useOutput } from '../store/output';
 import { useSession } from '../store/session';
 import { useSettings, type ExportFormat, type Theme } from '../store/settings';
 
@@ -42,6 +44,41 @@ function Segmented<T extends string | number>({
         </button>
       ))}
     </div>
+  );
+}
+
+function ProcessingRow() {
+  const s = useSettings();
+  const info = useOutput((o) => o.renderInfo);
+  const gpu = gpuInfo();
+  const status = !gpu.available
+    ? 'この端末・ブラウザでは GPU（WebGL2）が使えないため、CPU で処理します。'
+    : `この端末の GPU: ${gpu.name || '利用できます'}`;
+  return (
+    <Row
+      title="処理モード"
+      desc="GPU にすると、水彩・油彩・滲み・写真の質感などの重いエフェクトを GPU で計算して速く描けます。見た目がおかしい時は CPU に切り替えてください。"
+    >
+      <div className="flex flex-col items-start gap-1.5 sm:items-end">
+        <Segmented<GpuMode>
+          value={s.processing}
+          onChange={(processing) => s.set({ processing })}
+          options={[
+            { value: 'gpu', label: 'GPU（高速）' },
+            { value: 'cpu', label: 'CPU' },
+          ]}
+        />
+        <p className="max-w-64 text-xs text-muted sm:text-right" data-testid="gpu-status">
+          {status}
+          {info && (
+            <>
+              <br />
+              前回の描画: {(info.ms / 1000).toFixed(2)} 秒（{info.usedGpu ? 'GPU を使用' : 'CPU のみ'}）
+            </>
+          )}
+        </p>
+      </div>
+    </Row>
   );
 }
 
@@ -131,6 +168,7 @@ export default function Settings() {
               ]}
             />
           </Row>
+          <ProcessingRow />
           <Row title="保存形式" desc="WebP はファイルが小さく済みます（非対応のブラウザでは PNG で保存されます）。">
             <Segmented<ExportFormat>
               value={s.exportFormat}

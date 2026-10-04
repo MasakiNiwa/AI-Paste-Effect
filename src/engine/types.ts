@@ -1,3 +1,4 @@
+import type { Gpu } from './gpu';
 import type { Filter } from 'pixi.js';
 import type { ParamSchema, ParamValues } from './params';
 import type { Mask } from './region';
@@ -60,6 +61,11 @@ export interface EffectContext {
   filterPad: number;
   /** PixiJS のフィルタを source（または指定キャンバス）に適用した結果を返す */
   applyFilters(filters: Filter[], input?: HTMLCanvasElement): Promise<HTMLCanvasElement>;
+  /**
+   * GPU モードの時の GPU（WebGL2）。CPU モード・非対応なら null。
+   * 重い画素ループは gpuOr() で GPU 版と CPU 版を両方書いておく。
+   */
+  gpu: Gpu | null;
   /** pixi-filters を遅延読み込みする */
   filters(): Promise<typeof import('pixi-filters')>;
 }

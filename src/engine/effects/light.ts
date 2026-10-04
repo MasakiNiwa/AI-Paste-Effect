@@ -2,7 +2,7 @@ import { css, parseColor } from '../color';
 import { p } from '../params';
 import { range } from '../random';
 import { defineEffect } from '../types';
-import { ctx2d, drawSoft, withAlpha } from './util';
+import { ctx2d, drawSoft, rgb, tryGpu, withAlpha } from './util';
 
 export const bloom = defineEffect({
   id: 'bloom',
@@ -19,7 +19,28 @@ export const bloom = defineEffect({
     color: p.color('#ffffff', '光の色（白で元の色のまま）'),
   },
   async render(ctx, v) {
+    const { KawaseBlurFilter } = await ctx.filters();
+    const blur = (input: HTMLCanvasElement) =>
+      ctx.applyFilters([new KawaseBlurFilter({ strength: Math.max(1, (v.radius * ctx.short) / 2), quality: 6, clamp: true })], input);
     // 明部の抽出（ソフトニー付きのしきい値）
+    const brightGpu = await tryGpu(ctx, (gpu) =>
+      gpu.run({
+        width: ctx.width,
+        height: ctx.height,
+        textures: { uSrc: ctx.source },
+        uniforms: { uThreshold: v.threshold, uIntensity: v.intensity, uTint: rgb(v.color) },
+        fragment: `
+uniform sampler2D uSrc;
+uniform float uThreshold, uIntensity;
+uniform vec3 uTint;
+void main() {
+  vec3 c = texture(uSrc, vUv).rgb;
+  float k = clamp((luma(c) - uThreshold + 0.15) / 0.3, 0.0, 1.0);
+  outColor = vec4(min(vec3(1.0), c * (k * k * (3.0 - 2.0 * k) * uIntensity) * uTint), 1.0);
+}`,
+      }),
+    );
+    if (brightGpu) return blur(brightGpu);
     const bright = ctx.createCanvas();
     const g = ctx2d(bright);
     g.drawImage(ctx.source, 0, 0);
@@ -37,8 +58,7 @@ export const bloom = defineEffect({
       d[i + 3] = 255;
     }
     g.putImageData(img, 0, 0);
-    const { KawaseBlurFilter } = await ctx.filters();
-    return ctx.applyFilters([new KawaseBlurFilter({ strength: Math.max(1, (v.radius * ctx.short) / 2), quality: 6, clamp: true })], bright);
+    return blur(bright);
   },
 });
 

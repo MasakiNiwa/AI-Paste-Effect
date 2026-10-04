@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import type { GpuMode } from '../engine/gpu';
 
 export type Theme = 'system' | 'light' | 'dark';
 export type ExportFormat = 'png' | 'jpeg' | 'webp';
@@ -26,6 +27,8 @@ export interface Settings {
   showAiComment: boolean;
   /** 漫画素材の絵柄のセット（同じ意味の素材が複数のセットにある時に優先する） */
   assetPack: string;
+  /** 重い画素処理を GPU（WebGL2）で行うか。使えない端末では自動で CPU になる */
+  processing: GpuMode;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -40,6 +43,7 @@ export const DEFAULT_SETTINGS: Settings = {
   variantCount: 3,
   showAiComment: true,
   assetPack: 'manga',
+  processing: 'gpu',
 };
 
 interface SettingsStore extends Settings {

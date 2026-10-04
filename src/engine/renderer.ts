@@ -9,6 +9,7 @@ import { buildMask, type Mask } from './region';
 import { mulberry32 } from './random';
 import type { BlendMode, EffectContext } from './types';
 import { ctx2d } from './effects/util';
+import { activeGpu, type Gpu } from './gpu';
 
 export function createCanvas(width: number, height: number): HTMLCanvasElement {
   const c = document.createElement('canvas');
@@ -128,13 +129,27 @@ export interface RenderResult {
   canvas: HTMLCanvasElement;
   /** 個別レイヤーの描画失敗（全体は続行する） */
   errors: string[];
+  /** 描画にかかった時間（ミリ秒） */
+  ms: number;
+  /** GPU で計算したレイヤーがあったか */
+  usedGpu: boolean;
 }
 
 /**
  * strength はアプリ側で調整する演出の強さ（1 = そのまま）。プランの intensity と掛け合わせる。
  */
 export async function renderPlan(original: HTMLCanvasElement, plan: CompiledPlan, strength = 1): Promise<RenderResult> {
+  const t0 = performance.now();
   const s = plan.intensity * strength;
+  const base = activeGpu();
+  let usedGpu = false;
+  const gpu: Gpu | null = base && {
+    run: (pass) => {
+      const r = base.run(pass);
+      usedGpu = true;
+      return r;
+    },
+  };
   const { width, height } = original;
   const acc = createCanvas(width, height);
   const g = ctx2d(acc);
@@ -154,6 +169,7 @@ export async function renderPlan(original: HTMLCanvasElement, plan: CompiledPlan
         source: acc,
         original,
         rng: mulberry32(layer.seed),
+        gpu,
         mask,
         createCanvas: (w = width, h = height) => createCanvas(w, h),
         applyFilters: (filters, input = acc) => applyFilters(input, filters, filterPad),
@@ -179,5 +195,5 @@ export async function renderPlan(original: HTMLCanvasElement, plan: CompiledPlan
       errors.push(`${layer.path}（${layer.effect.id}）の描画に失敗: ${(e as Error).message}`);
     }
   }
-  return { canvas: acc, errors };
+  return { canvas: acc, errors, ms: performance.now() - t0, usedGpu };
 }
