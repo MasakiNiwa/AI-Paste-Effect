@@ -2,6 +2,8 @@ import { MapPin, Minus, Plus } from 'lucide-react';
 import { colorToJson } from '../engine/edit';
 import { parseColor, type RGBA } from '../engine/color';
 import type { ParamSpec, Point } from '../engine/params';
+import { PACKS } from '../engine/assets';
+import { AssetPicker } from './AssetPicker';
 import { Switch } from './ui';
 
 /** パラメータ説明を「見出し」と「補足」に分ける（例: "大きさ（短辺比）" → ["大きさ", "短辺比"]） */
@@ -72,13 +74,15 @@ export interface ParamControlProps {
   value: unknown;
   onChange: (v: unknown) => void;
   onStart: () => void;
+  /** 同じレイヤーの他のパラメータ（素材ピッカーで絵柄のセットを知るため） */
+  siblings?: Record<string, unknown>;
   /** 位置パラメータを画像のタップで指定するモードにする */
   onPickPoint?: () => void;
   picking?: boolean;
 }
 
 /** パラメータ宣言から自動で作る操作部品 */
-export function ParamControl({ name, spec, value, onChange, onStart, onPickPoint, picking }: ParamControlProps) {
+export function ParamControl({ name, spec, value, onChange, onStart, onPickPoint, picking, siblings }: ParamControlProps) {
   const [title, note] = splitLabel(spec.desc);
   const change = (v: unknown) => {
     onStart();
@@ -98,6 +102,10 @@ export function ParamControl({ name, spec, value, onChange, onStart, onPickPoint
       control = <Switch label={title} checked={value as boolean} onChange={change} />;
       break;
     case 'enum':
+      if (name === 'asset') {
+        control = <AssetPicker value={value as string} pack={(siblings?.pack as string) ?? 'auto'} onChange={change} />;
+        break;
+      }
       control = (
         <select
           aria-label={title}
@@ -107,7 +115,7 @@ export function ParamControl({ name, spec, value, onChange, onStart, onPickPoint
         >
           {spec.options.map((o) => (
             <option key={o} value={o}>
-              {o}
+              {name === 'pack' ? (o === 'auto' ? '設定で選んだセット' : (PACKS.find((p) => p.id === o)?.name ?? o)) : o}
             </option>
           ))}
         </select>

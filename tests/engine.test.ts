@@ -200,11 +200,31 @@ describe('prompt', () => {
 });
 
 describe('manga assets and presets', async () => {
-  const { ASSETS, assetSvg, assetCatalog } = await import('../src/engine/assets');
+  const { ALL_ASSETS, PACKS, ASSET_IDS, assetSvg, assetCatalog, findAsset, idFromFileName, svgDataAttrs, setPreferredPack } = await import(
+    '../src/engine/assets'
+  );
+  it('discovers asset files and derives IDs and metadata', () => {
+    expect(idFromFileName('comedy-sweatBig.svg')).toBe('comedy/sweatBig');
+    expect(idFromFileName('sparkle.png')).toBe('misc/sparkle');
+    expect(svgDataAttrs('<svg xmlns="x" data-label="大きな汗" data-size="0.2">')).toEqual({ label: '大きな汗', size: '0.2' });
+    expect(PACKS.map((p) => p.id)).toEqual(expect.arrayContaining(['manga', 'manga-line']));
+    expect(PACKS[0].id).toBe('manga');
+    // 同じ ID は 1 つにまとめて AI に伝える
+    expect(new Set(ASSET_IDS).size).toBe(ASSET_IDS.length);
+  });
+  it('switches between packs for the same asset ID', () => {
+    expect(findAsset('comedy/sweatBig')?.pack).toBe('manga');
+    setPreferredPack('manga-line');
+    expect(findAsset('comedy/sweatBig')?.pack).toBe('manga-line');
+    // 線画セットに無い素材は標準の絵
+    expect(findAsset('gloom/rainCloud')?.pack).toBe('manga');
+    expect(findAsset('comedy/sweatBig', 'manga')?.pack).toBe('manga');
+    setPreferredPack('manga');
+  });
   it('every asset in the manifest has an SVG with colour placeholders and a license', () => {
-    expect(ASSETS.length).toBeGreaterThanOrEqual(20);
-    for (const a of ASSETS) {
-      const svg = assetSvg(a, '#123456', '#abcdef');
+    expect(ALL_ASSETS.length).toBeGreaterThanOrEqual(20);
+    for (const a of ALL_ASSETS) {
+      const svg = assetSvg(a, '#123456', '#abcdef')!;
       expect(svg, a.id).toContain('<svg');
       expect(svg, a.id).not.toContain('__C1__');
       expect(a.license, a.id).toBeTruthy();
@@ -253,5 +273,24 @@ describe('intensity', () => {
     expect(init).toContain('演出の心得');
     expect(init).toContain('intensity');
     expect(init).toContain('awkward（静かな気まずさ）= ');
+  });
+});
+
+describe('v0.8 details', async () => {
+  const { exportFileName } = await import('../src/lib/image');
+  it('makes unique, safe export names with the variant and title', () => {
+    const at = new Date(2026, 9, 4, 13, 5, 9);
+    expect(exportFileName('My Pic.png', 2, '夏の終わり/逆光', 'webp', at)).toBe('My_Pic_案2_夏の終わり_逆光_20261004-130509.webp');
+    expect(exportFileName('', 0, undefined, 'png', at)).toBe('image_20261004-130509.png');
+  });
+  it('scales protect per layer with a number', () => {
+    const r = parsePlan(
+      JSON.stringify({
+        protect: [{ shape: 'ellipse', cx: 0.5, cy: 0.3, rx: 0.1, ry: 0.1, strength: 0.8 }],
+        layers: [{ effect: 'blur' }, { effect: 'blur', protect: 0.5 }, { effect: 'blur', protect: false }],
+      }),
+    );
+    const ps = r.plan!.layers.map((l) => l.protect.map((x) => x.strength));
+    expect(ps).toEqual([[0.8], [0.4], []]);
   });
 });

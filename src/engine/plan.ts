@@ -299,7 +299,13 @@ function compileRoot(value: unknown): ParseResult {
         blend: normalizeBlend(l.blend, effect.defaultBlend, path, warn),
         opacity: num01(l.opacity, 1) * blockOpacity,
         regions,
-        protect: l.protect === false ? [] : protect,
+        // protect: false で保護なし、0〜1 の数値でこのレイヤーへの保護の効き具合を調整
+        protect:
+          l.protect === false || l.protect === 0
+            ? []
+            : typeof l.protect === 'number' && l.protect < 1
+              ? protect.map((r) => ({ ...r, strength: r.strength * Math.max(0, l.protect as number) }))
+              : protect,
         seed: typeof l.seed === 'number' ? Math.floor(l.seed) : hashString(`${blockId}/${path}/${effect.id}`),
       });
     });

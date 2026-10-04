@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react';
 import { ChevronDown, Download, Gauge, Hand, Loader2, MessageCircle, RotateCcw, Share2, SlidersHorizontal, Sparkles } from 'lucide-react';
 import { useAppliedParse, useAppliedReply } from '../hooks/usePipeline';
-import { canvasToBlob, downloadBlob, extensionOf } from '../lib/image';
+import { canvasToBlob, downloadBlob, exportFileName, extensionOf } from '../lib/image';
 import { useOutput } from '../store/output';
 import { useSession } from '../store/session';
 import { useSettings, type CompareMode } from '../store/settings';
@@ -301,12 +301,13 @@ export function Preview({ fill = false }: { fill?: boolean }) {
   const format = useSettings((s) => s.exportFormat);
   const applied = useAppliedParse();
   const plan = applied.plan;
+  const reply = useAppliedReply();
+  const variant = Math.min(useSession((s) => s.variant), Math.max(0, reply.variants.length - 1));
   const showComment = useSettings((s) => s.showAiComment) && !!applied.comment;
 
   const exportBlob = async () => {
     const blob = await canvasToBlob(result!.canvas, format);
-    const base = (imageName.replace(/\.[^.]+$/, '') || 'image').slice(0, 40);
-    return { blob, name: `${base}-effect.${extensionOf(blob)}` };
+    return { blob, name: exportFileName(imageName, reply.variants.length > 1 ? variant + 1 : 0, plan?.title, extensionOf(blob)) };
   };
   const save = async () => {
     if (!result) return;

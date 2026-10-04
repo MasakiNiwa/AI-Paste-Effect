@@ -229,7 +229,7 @@ export default function Home() {
   }, [setImageFile]);
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:items-start lg:gap-8">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:items-start lg:gap-8">
       <div className="space-y-4">
         <PromptStep />
         <JsonStep />

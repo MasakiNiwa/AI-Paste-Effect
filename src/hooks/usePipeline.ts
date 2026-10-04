@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { compilePlan, parseReply, type ParseResult, type ReplyResult } from '../engine/plan';
 import { fitImage, renderPlan } from '../engine/renderer';
+import { setPreferredPack } from '../engine/assets';
 import { canvasToDecodedUrl, loadImageFile } from '../lib/image';
 import { useOutput, type Picture } from '../store/output';
 import { useSession } from '../store/session';
@@ -60,6 +61,8 @@ export function usePipeline() {
   const parsed = useAppliedParse();
   const reply = useAppliedReply();
   const strength = useSession((s) => s.strength);
+  const assetPack = useSettings((s) => s.assetPack);
+  setPreferredPack(assetPack);
   const original = useOutput((s) => s.original);
   const out = useOutput((s) => s.set);
 
@@ -105,7 +108,7 @@ export function usePipeline() {
         .finally(() => id === renderId.current && out({ rendering: false }));
     }, 250);
     return () => clearTimeout(timer);
-  }, [original, parsed, strength, out]);
+  }, [original, parsed, strength, assetPack, out]);
 
   // 複数案のサムネイル（小さく描いて切り替え用に並べる）
   const thumbId = useRef(0);
@@ -131,5 +134,5 @@ export function usePipeline() {
         }
       }
     })();
-  }, [original, reply, out]);
+  }, [original, reply, assetPack, out]);
 }

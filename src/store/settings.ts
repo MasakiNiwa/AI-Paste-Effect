@@ -24,6 +24,8 @@ export interface Settings {
   variantCount: number;
   /** 結果画面に AI のコメントを表示する（アプリ上の表示だけ。プロンプトは変わらない） */
   showAiComment: boolean;
+  /** 漫画素材の絵柄のセット（同じ意味の素材が複数のセットにある時に優先する） */
+  assetPack: string;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -37,6 +39,7 @@ export const DEFAULT_SETTINGS: Settings = {
   aiTalk: true,
   variantCount: 3,
   showAiComment: true,
+  assetPack: 'manga',
 };
 
 interface SettingsStore extends Settings {

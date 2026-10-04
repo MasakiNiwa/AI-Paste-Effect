@@ -1,5 +1,4 @@
 {
-  "pack": "manga-v1",
   "assets": [
     {
       "id": "shock/burstWhite",
@@ -14,7 +13,6 @@
         "#ffffff"
       ],
       "size": 0.6,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -31,7 +29,6 @@
         "#ffffff"
       ],
       "size": 0.18,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -48,7 +45,6 @@
         "#ffffff"
       ],
       "size": 0.16,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -65,7 +61,6 @@
         "#ffffff"
       ],
       "size": 0.35,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -82,7 +77,6 @@
         "#222222"
       ],
       "size": 0.25,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -99,7 +93,6 @@
         "#222222"
       ],
       "size": 0.2,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -116,7 +109,6 @@
         "#4b3d6e"
       ],
       "size": 0.6,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -133,7 +125,6 @@
         "#ffffff"
       ],
       "size": 0.22,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -150,7 +141,6 @@
         "#7fa6d8"
       ],
       "size": 0.25,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -167,7 +157,6 @@
         "#25305a"
       ],
       "size": 0.6,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -184,7 +173,6 @@
         "#2f6db0"
       ],
       "size": 0.2,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -201,7 +189,6 @@
         "#2f6db0"
       ],
       "size": 0.18,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -218,7 +205,6 @@
         "#ffffff"
       ],
       "size": 0.18,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -236,7 +222,6 @@
         "#ffffff"
       ],
       "size": 0.22,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -253,7 +238,6 @@
         "#333333"
       ],
       "size": 0.3,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -270,7 +254,6 @@
         "#ffffff"
       ],
       "size": 0.18,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -286,7 +269,6 @@
         "#ffffff"
       ],
       "size": 0.25,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -303,7 +285,6 @@
         "#ffffff"
       ],
       "size": 0.22,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -320,7 +301,6 @@
         "#e27c9e"
       ],
       "size": 0.6,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -338,7 +318,6 @@
         "#ffffff"
       ],
       "size": 0.4,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -354,7 +333,6 @@
         "#ffbf2e"
       ],
       "size": 0.3,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -371,7 +349,6 @@
         "#ff8a3d"
       ],
       "size": 0.3,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -387,7 +364,6 @@
         "#ffffff"
       ],
       "size": 0.25,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -403,7 +379,6 @@
         "#ffffff"
       ],
       "size": 0.35,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -420,7 +395,6 @@
         "#ffffff"
       ],
       "size": 0.4,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     },
@@ -437,7 +411,6 @@
         "#efe8dc"
       ],
       "size": 0.35,
-      "defaultBlend": "normal",
       "license": "MIT",
       "author": "AI Paste Effect"
     }

@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { RotateCcw } from 'lucide-react';
 import { Button, Card, Switch as Toggle } from '../components/ui';
 import { useToast } from '../components/Toast';
+import { ALL_ASSETS, PACKS, assetPreviewUrl } from '../engine/assets';
 import { useSession } from '../store/session';
 import { useSettings, type ExportFormat, type Theme } from '../store/settings';
 
@@ -75,6 +76,44 @@ export default function Settings() {
           <Row title="AI のコメントを表示" desc="オフにすると結果画面がすっきりして、イラストを大きく表示できます（AI への依頼内容は変わりません）。">
             <Toggle label="AI のコメントを表示" checked={s.showAiComment} onChange={(showAiComment) => s.set({ showAiComment })} />
           </Row>
+        </div>
+      </Card>
+
+      <Card>
+        <h2 className="mb-1 text-xs font-bold tracking-wider text-muted">漫画素材のセット</h2>
+        <p className="mb-3 text-xs leading-relaxed text-muted">
+          同じ意味の素材（驚き線・汗など）に複数の絵柄がある時、どのセットの絵を使うかを選べます。そのセットに無い素材は標準の絵になります。
+        </p>
+        <div className="space-y-2" role="radiogroup" aria-label="漫画素材のセット">
+          {PACKS.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              role="radio"
+              aria-checked={s.assetPack === p.id}
+              onClick={() => s.set({ assetPack: p.id })}
+              className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition ${
+                s.assetPack === p.id ? 'border-accent bg-accent/5' : 'border-line hover:bg-surface-2'
+              }`}
+            >
+              <span className={`grid size-4 shrink-0 place-items-center rounded-full border-2 ${s.assetPack === p.id ? 'border-accent' : 'border-line'}`}>
+                {s.assetPack === p.id && <span className="size-2 rounded-full bg-accent" />}
+              </span>
+              <span className="flex shrink-0 gap-1">
+                {ALL_ASSETS.filter((a) => a.pack === p.id)
+                  .slice(0, 3)
+                  .map((a) => (
+                    <img key={a.id} src={assetPreviewUrl(a)} alt="" className="checker size-8 rounded object-contain" />
+                  ))}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-semibold">{p.name}</span>
+                <span className="block truncate text-xs text-muted">
+                  {p.count} 素材・{p.author}・{p.license}
+                </span>
+              </span>
+            </button>
+          ))}
         </div>
       </Card>
 
