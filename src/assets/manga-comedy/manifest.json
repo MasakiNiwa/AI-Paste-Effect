@@ -1,0 +1,388 @@
+{
+  "assets": [
+    {
+      "id": "comedy/tsukkomiBurst",
+      "file": "comedy-tsukkomiBurst.svg",
+      "label": "ツッコミのギザギザ衝撃。頭の横の余白へ。顔・体に重ねない",
+      "size": 0.25,
+      "colors": [
+        "#302e43",
+        "#ffffff"
+      ],
+      "tags": [
+        "comedy",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "comedy/panicSweat",
+      "file": "comedy-panicSweat.svg",
+      "label": "大袈裟な汗の飛び散り。頭の横の余白へ。あたふた・慌てる",
+      "size": 0.25,
+      "colors": [
+        "#478ba9",
+        "#ffffff"
+      ],
+      "tags": [
+        "comedy",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "comedy/deadpanDots",
+      "file": "comedy-deadpanDots.svg",
+      "label": "大きさが違う間の点3つ。頭の横へ。真顔の沈黙・オチの間",
+      "size": 0.18,
+      "colors": [
+        "#302e43",
+        "#ffffff"
+      ],
+      "tags": [
+        "comedy",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "comedy/smugSpark",
+      "file": "comedy-smugSpark.svg",
+      "label": "ドヤッと光る太い星。顔の横の背景へ。目や歯に重ねない",
+      "size": 0.21,
+      "colors": [
+        "#302e43",
+        "#ffffff"
+      ],
+      "tags": [
+        "comedy",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "comedy/flusteredZig",
+      "file": "comedy-flusteredZig.svg",
+      "label": "焦り・照れのジグザグ。頭の横の余白へ。頬には描かない",
+      "size": 0.23,
+      "colors": [
+        "#dd798c",
+        "#ffffff"
+      ],
+      "tags": [
+        "comedy",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "comedy/deflatedSpiral",
+      "file": "comedy-deflatedSpiral.svg",
+      "label": "脱力したゆるい渦。頭の横の余白へ。しょぼん・空回り",
+      "size": 0.25,
+      "colors": [
+        "#8581a5",
+        "#ffffff"
+      ],
+      "tags": [
+        "comedy",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "comedy/angerPuff",
+      "file": "comedy-angerPuff.svg",
+      "label": "ぷんすかの丸い湯気。頭上の余白へ。吹き出しのように浮かせる",
+      "size": 0.26,
+      "colors": [
+        "#d46b62",
+        "#ffffff"
+      ],
+      "tags": [
+        "comedy",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "comedy/tinySoul",
+      "file": "comedy-tinySoul.svg",
+      "label": "ひょろっと抜ける漫画記号の魂。口の横の余白へ。口・顔に重ねない",
+      "size": 0.22,
+      "colors": [
+        "#777f9e",
+        "#ffffff"
+      ],
+      "tags": [
+        "comedy",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "comedy/confusionKnot",
+      "file": "comedy-confusionKnot.svg",
+      "label": "ぐちゃぐちゃの混乱線。頭の横や上の余白へ。顔は変えない",
+      "size": 0.26,
+      "colors": [
+        "#302e43",
+        "#ffffff"
+      ],
+      "tags": [
+        "comedy",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "comedy/awkwardBox",
+      "file": "comedy-awkwardBox.svg",
+      "label": "角ばった気まずい線の囲み。背景の余白へ。キャラを覆わない",
+      "size": 0.32,
+      "colors": [
+        "#8894ad",
+        "#ffffff"
+      ],
+      "tags": [
+        "comedy",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "comedy/questionPair",
+      "file": "comedy-questionPair.svg",
+      "label": "大小の疑問符。頭の横へ斜めに。困惑・なんでやねん",
+      "size": 0.24,
+      "colors": [
+        "#302e43",
+        "#ffffff"
+      ],
+      "tags": [
+        "comedy",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "comedy/exclaimBounce",
+      "file": "comedy-exclaimBounce.svg",
+      "label": "弾む太い感嘆符。頭の横の余白へ。唐突な気付き・びっくり",
+      "size": 0.2,
+      "colors": [
+        "#f4ac39",
+        "#ffffff"
+      ],
+      "tags": [
+        "comedy",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "comedy/nopeCross",
+      "file": "comedy-nopeCross.svg",
+      "label": "大きなバツ印。頭の横の余白へ。否定のツッコミ、顔に重ねない",
+      "size": 0.22,
+      "colors": [
+        "#df665e",
+        "#ffffff"
+      ],
+      "tags": [
+        "comedy",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "comedy/yesCircle",
+      "file": "comedy-yesCircle.svg",
+      "label": "勢いのある丸印。背景の余白へ。正解・よしのアクセント",
+      "size": 0.22,
+      "colors": [
+        "#dd736d",
+        "#ffffff"
+      ],
+      "tags": [
+        "comedy",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "comedy/laughTicks",
+      "file": "comedy-laughTicks.svg",
+      "label": "弾む笑いの線。頭の周辺の余白へ。口や表情を描き変えない",
+      "size": 0.23,
+      "colors": [
+        "#e6a142",
+        "#ffffff"
+      ],
+      "tags": [
+        "comedy",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "comedy/cringeHatch",
+      "file": "comedy-cringeHatch.svg",
+      "label": "しょっぱい気まずさの短い縦線。頭の横の余白へ。顔・肌に重ねない",
+      "size": 0.22,
+      "colors": [
+        "#657391",
+        "#ffffff"
+      ],
+      "tags": [
+        "comedy",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "comedy/popFlower",
+      "file": "comedy-popFlower.svg",
+      "label": "コメディのぽわっと咲く花。背景の余白へ。ご機嫌・おめでたい",
+      "size": 0.23,
+      "colors": [
+        "#e89847",
+        "#ffffff"
+      ],
+      "tags": [
+        "comedy",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "comedy/happyNotes",
+      "file": "comedy-happyNotes.svg",
+      "label": "太い漫画音符。頭の横の余白へ。ご機嫌・鼻歌",
+      "size": 0.23,
+      "colors": [
+        "#df859c",
+        "#ffffff"
+      ],
+      "tags": [
+        "comedy",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "comedy/dramaCrack",
+      "file": "comedy-dramaCrack.svg",
+      "label": "大袈裟なガーンの太い稲妻。頭の横の余白へ。顔に重ねない",
+      "size": 0.28,
+      "colors": [
+        "#50435c",
+        "#ffffff"
+      ],
+      "tags": [
+        "comedy",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "comedy/wobbleSides",
+      "file": "comedy-wobbleSides.svg",
+      "label": "両脇の大袈裟な震え線。人物の外側の余白へ。人物は保護",
+      "size": 0.42,
+      "colors": [
+        "#302e43",
+        "#ffffff"
+      ],
+      "tags": [
+        "comedy",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "motion/comicDust",
+      "file": "motion-comicDust.svg",
+      "label": "ぽふっとした漫画土煙。足元の背景へ。体に重ねない",
+      "size": 0.33,
+      "colors": [
+        "#8b7566",
+        "#ffffff"
+      ],
+      "tags": [
+        "motion",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "motion/comicImpact",
+      "file": "motion-comicImpact.svg",
+      "label": "漫画のドンッの輪と短い破片。動作の周辺の背景へ。人物は保護",
+      "size": 0.35,
+      "colors": [
+        "#e29e49",
+        "#ffffff"
+      ],
+      "tags": [
+        "motion",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "motion/comicDash",
+      "file": "motion-comicDash.svg",
+      "label": "逃げ足の太い横線。手足の周辺の背景に。人物を保護",
+      "size": 0.4,
+      "colors": [
+        "#444158",
+        "#ffffff"
+      ],
+      "tags": [
+        "motion",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    },
+    {
+      "id": "shock/comicFlash",
+      "file": "shock-comicFlash.svg",
+      "label": "太い疎らな集中線。中心は人物と上半身の外側を空け、人物を保護",
+      "size": 0.8,
+      "colors": [
+        "#302e43",
+        "#ffffff"
+      ],
+      "tags": [
+        "shock",
+        "comedy"
+      ],
+      "author": "AI Paste Effect",
+      "license": "MIT"
+    }
+  ]
+}

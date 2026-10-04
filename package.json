@@ -1,7 +1,7 @@
 {
   "name": "ai-paste-effect",
   "private": true,
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "普段使いのAIからコピペするエフェクトアプリ",
   "license": "MIT",
   "type": "module",

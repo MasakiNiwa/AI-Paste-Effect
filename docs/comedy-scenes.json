@@ -1,0 +1,190 @@
+{
+  "variations": [
+    {
+      "format": "ai-paste-effect",
+      "version": 1,
+      "title": "tsukkomi",
+      "protect": [
+        {
+          "shape": "ellipse",
+          "x": 0.5,
+          "y": 0.45,
+          "rx": 0.1,
+          "ry": 0.085,
+          "feather": 0.02,
+          "strength": 1
+        }
+      ],
+      "layers": [
+        {
+          "effect": "reactionScene",
+          "params": {
+            "kind": "tsukkomi",
+            "face": {
+              "x": 0.5,
+              "y": 0.45
+            },
+            "faceSize": 0.18,
+            "pack": "manga-comedy",
+            "intensity": 0.8
+          }
+        }
+      ]
+    },
+    {
+      "format": "ai-paste-effect",
+      "version": 1,
+      "title": "panic",
+      "protect": [
+        {
+          "shape": "ellipse",
+          "x": 0.5,
+          "y": 0.45,
+          "rx": 0.1,
+          "ry": 0.085,
+          "feather": 0.02,
+          "strength": 1
+        }
+      ],
+      "layers": [
+        {
+          "effect": "reactionScene",
+          "params": {
+            "kind": "panic",
+            "face": {
+              "x": 0.5,
+              "y": 0.45
+            },
+            "faceSize": 0.18,
+            "pack": "manga-comedy",
+            "intensity": 0.8
+          }
+        }
+      ]
+    },
+    {
+      "format": "ai-paste-effect",
+      "version": 1,
+      "title": "deadpan",
+      "protect": [
+        {
+          "shape": "ellipse",
+          "x": 0.5,
+          "y": 0.45,
+          "rx": 0.1,
+          "ry": 0.085,
+          "feather": 0.02,
+          "strength": 1
+        }
+      ],
+      "layers": [
+        {
+          "effect": "reactionScene",
+          "params": {
+            "kind": "deadpan",
+            "face": {
+              "x": 0.5,
+              "y": 0.45
+            },
+            "faceSize": 0.18,
+            "pack": "manga-comedy",
+            "intensity": 0.8
+          }
+        }
+      ]
+    },
+    {
+      "format": "ai-paste-effect",
+      "version": 1,
+      "title": "smug",
+      "protect": [
+        {
+          "shape": "ellipse",
+          "x": 0.5,
+          "y": 0.45,
+          "rx": 0.1,
+          "ry": 0.085,
+          "feather": 0.02,
+          "strength": 1
+        }
+      ],
+      "layers": [
+        {
+          "effect": "reactionScene",
+          "params": {
+            "kind": "smug",
+            "face": {
+              "x": 0.5,
+              "y": 0.45
+            },
+            "faceSize": 0.18,
+            "pack": "manga-comedy",
+            "intensity": 0.8
+          }
+        }
+      ]
+    },
+    {
+      "format": "ai-paste-effect",
+      "version": 1,
+      "title": "flustered",
+      "protect": [
+        {
+          "shape": "ellipse",
+          "x": 0.5,
+          "y": 0.45,
+          "rx": 0.1,
+          "ry": 0.085,
+          "feather": 0.02,
+          "strength": 1
+        }
+      ],
+      "layers": [
+        {
+          "effect": "reactionScene",
+          "params": {
+            "kind": "flustered",
+            "face": {
+              "x": 0.5,
+              "y": 0.45
+            },
+            "faceSize": 0.18,
+            "pack": "manga-comedy",
+            "intensity": 0.8
+          }
+        }
+      ]
+    },
+    {
+      "format": "ai-paste-effect",
+      "version": 1,
+      "title": "deflated",
+      "protect": [
+        {
+          "shape": "ellipse",
+          "x": 0.5,
+          "y": 0.45,
+          "rx": 0.1,
+          "ry": 0.085,
+          "feather": 0.02,
+          "strength": 1
+        }
+      ],
+      "layers": [
+        {
+          "effect": "reactionScene",
+          "params": {
+            "kind": "deflated",
+            "face": {
+              "x": 0.5,
+              "y": 0.45
+            },
+            "faceSize": 0.18,
+            "pack": "manga-comedy",
+            "intensity": 0.8
+          }
+        }
+      ]
+    }
+  ]
+}

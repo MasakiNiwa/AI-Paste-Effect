@@ -1,0 +1,37 @@
+#!/usr/bin/env node
+/** Original comedy SVG symbols, MIT; regenerate only manga-comedy. */
+import {mkdirSync,writeFileSync} from 'node:fs';
+const out=new URL('../src/assets/manga-comedy/',import.meta.url);mkdirSync(new URL('svg/',out),{recursive:true});
+const C='__C1__',A='__C2__';
+const pen=(d,w=8,color=C)=>`<path d="${d}" fill="none" stroke="${A}" stroke-width="${w+5}" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+const fill=(d,color=C,border=A)=>`<path d="${d}" fill="${color}" stroke="${border}" stroke-width="5" stroke-linejoin="round"/>`;
+const dot=(x,y,r=5)=>`<circle cx="${x}" cy="${y}" r="${r+2}" fill="${A}"/><circle cx="${x}" cy="${y}" r="${r}" fill="${C}"/>`;
+const spike=(x,y,ro,ri,n=8)=>{let d='';for(let i=0;i<n*2;i++){let t=i*Math.PI/n-Math.PI/2,r=i%2?ri:ro;d+=`${i?'L':'M'}${x+Math.cos(t)*r} ${y+Math.sin(t)*r}`;}return d+'Z';};
+const a=[];const add=(id,label,size,body,colors=['#302e43','#ffffff'],w=200,h=200)=>a.push({id,file:id.replace('/','-')+'.svg',label,size,body,colors,w,h,tags:[id.split('/')[0],'comedy'],author:'AI Paste Effect',license:'MIT'});
+add('comedy/tsukkomiBurst','ツッコミのギザギザ衝撃。頭の横の余白へ。顔・体に重ねない',.25,fill(spike(100,100,80,37,9),'#ffda55')+pen('M85 51L98 104M104 125L106 130',9));
+add('comedy/panicSweat','大袈裟な汗の飛び散り。頭の横の余白へ。あたふた・慌てる',.25,[[60,71,-32],[116,52,8],[149,124,42]].map(([x,y,r])=>`<g transform="translate(${x} ${y}) rotate(${r})">${fill('M0 -26C-7 -12 -22 8 -16 21C-10 35 13 34 18 20C24 6 6 -15 0 -26Z','#a9e1f5')}</g>`).join(''),['#478ba9','#ffffff']);
+add('comedy/deadpanDots','大きさが違う間の点3つ。頭の横へ。真顔の沈黙・オチの間',.18,dot(46,97,7)+dot(100,109,6)+dot(154,95,5));
+add('comedy/smugSpark','ドヤッと光る太い星。顔の横の背景へ。目や歯に重ねない',.21,fill('M100 20Q111 81 175 100Q113 113 100 180Q86 113 24 100Q86 87 100 20Z','#ffda55')+pen('M31 30L46 43M157 158L171 171',5));
+add('comedy/flusteredZig','焦り・照れのジグザグ。頭の横の余白へ。頬には描かない',.23,pen('M34 54L65 73L42 94L74 115L49 139',7)+pen('M112 40L145 66L121 89L159 120L135 149',7),['#dd798c','#ffffff']);
+add('comedy/deflatedSpiral','脱力したゆるい渦。頭の横の余白へ。しょぼん・空回り',.25,pen('M155 143C180 65 43 17 29 96S143 181 153 113S71 57 66 101S117 136 121 105',7),['#8581a5','#ffffff']);
+add('comedy/angerPuff','ぷんすかの丸い湯気。頭上の余白へ。吹き出しのように浮かせる',.26,fill('M45 144C13 145 9 105 38 100C14 70 48 38 75 61C87 20 145 30 145 68C182 60 198 107 166 128C167 161 125 173 108 146C90 169 56 167 45 144Z',A,C)+pen('M78 183L86 163M123 185L118 170',6),['#d46b62','#ffffff']);
+add('comedy/tinySoul','ひょろっと抜ける漫画記号の魂。口の横の余白へ。口・顔に重ねない',.22,fill('M47 144C28 119 48 46 99 42C162 35 169 121 125 130C137 141 155 157 161 177C143 172 121 155 107 145C79 163 56 160 47 144Z',A,C)+pen('M74 85L72 100M110 83L109 98',5),['#777f9e','#ffffff']);
+add('comedy/confusionKnot','ぐちゃぐちゃの混乱線。頭の横や上の余白へ。顔は変えない',.26,pen('M27 126C9 52 173 54 166 119S61 163 47 84S162 20 147 119S39 170 83 52S183 145 55 126',5));
+add('comedy/awkwardBox','角ばった気まずい線の囲み。背景の余白へ。キャラを覆わない',.32,pen('M27 87L23 32L83 30M118 25L176 30L172 90M176 125L179 167L124 172M80 178L26 172L30 127',5),['#8894ad','#ffffff']);
+add('comedy/questionPair','大小の疑問符。頭の横へ斜めに。困惑・なんでやねん',.24,pen('M29 66C25 18 99 17 99 58C100 87 63 85 61 116',9)+dot(60,143,6)+pen('M121 99C118 66 166 65 166 93C166 111 145 112 144 131',6)+dot(143,152,4));
+add('comedy/exclaimBounce','弾む太い感嘆符。頭の横の余白へ。唐突な気付き・びっくり',.2,fill('M74 26L122 34L100 124L77 118Z')+dot(83,155,13),['#f4ac39','#ffffff']);
+add('comedy/nopeCross','大きなバツ印。頭の横の余白へ。否定のツッコミ、顔に重ねない',.22,pen('M49 47L153 153M149 48L47 151',15),['#df665e','#ffffff']);
+add('comedy/yesCircle','勢いのある丸印。背景の余白へ。正解・よしのアクセント',.22,pen('M101 30C186 30 190 171 98 171C9 174 13 29 101 30Z',12),['#dd736d','#ffffff']);
+add('comedy/laughTicks','弾む笑いの線。頭の周辺の余白へ。口や表情を描き変えない',.23,pen('M26 62L57 83M81 30L86 65M141 42L126 74M164 115L136 114',8),['#e6a142','#ffffff']);
+add('comedy/cringeHatch','しょっぱい気まずさの短い縦線。頭の横の余白へ。顔・肌に重ねない',.22,[0,1,2,3,4].map(i=>pen(`M${42+i*27} ${44+(i%2)*12}L${42+i*27} ${128+(i%3)*15}`,4)).join(''),['#657391','#ffffff']);
+add('comedy/popFlower','コメディのぽわっと咲く花。背景の余白へ。ご機嫌・おめでたい',.23,fill('M100 75C55 6 11 71 66 104C1 146 66 198 103 140C145 202 206 139 140 101C196 53 130 4 100 75Z','#ffe07a')+dot(102,105,15),['#e89847','#ffffff']);
+add('comedy/happyNotes','太い漫画音符。頭の横の余白へ。ご機嫌・鼻歌',.23,fill('M70 47L123 32L125 112C148 130 110 153 102 130L102 60L80 66L80 139C95 159 54 177 50 151C49 133 69 130 70 133Z'),['#df859c','#ffffff']);
+add('comedy/dramaCrack','大袈裟なガーンの太い稲妻。頭の横の余白へ。顔に重ねない',.28,fill('M101 13L142 22L102 76L148 68L62 184L85 111L48 117Z','#ffe16a'),['#50435c','#ffffff']);
+add('comedy/wobbleSides','両脇の大袈裟な震え線。人物の外側の余白へ。人物は保護',.42,pen('M34 33L19 64L36 88L19 117L35 154',7)+pen('M164 37L180 69L165 92L181 120L164 158',7));
+add('motion/comicDust','ぽふっとした漫画土煙。足元の背景へ。体に重ねない',.33,fill('M19 108C1 77 33 60 51 75C43 31 104 26 112 65C133 42 164 63 155 83C185 76 195 117 168 131C119 141 60 140 19 108Z','#f4e6cf')+pen('M20 155L48 151M151 154L182 148',5),['#8b7566','#ffffff'],220,180);
+add('motion/comicImpact','漫画のドンッの輪と短い破片。動作の周辺の背景へ。人物は保護',.35,pen(spike(100,100,64,50,9),5)+[0,1,2,3,4,5].map(i=>{let t=i*Math.PI/3;return pen(`M${100+Math.cos(t)*78} ${100+Math.sin(t)*78}L${100+Math.cos(t)*92} ${100+Math.sin(t)*92}`,5)}).join(''),['#e29e49','#ffffff']);
+add('motion/comicDash','逃げ足の太い横線。手足の周辺の背景に。人物を保護',.4,pen('M23 30L237 26M63 60L255 61M103 91L219 88',7),['#444158','#ffffff'],280,120);
+add('shock/comicFlash','太い疎らな集中線。中心は人物と上半身の外側を空け、人物を保護',.8,Array.from({length:18},(_,i)=>{let t=i*Math.PI/9;return pen(`M${100+Math.cos(t)*72} ${100+Math.sin(t)*72}L${100+Math.cos(t)*94} ${100+Math.sin(t)*94}`,i%3===0?8:4)}).join(''));
+for(const v of a)writeFileSync(new URL('svg/'+v.file,out),`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${v.w} ${v.h}">\n<!-- Original vector artwork, MIT; gen-comedy-assets.mjs -->\n${v.body}\n</svg>\n`);
+writeFileSync(new URL('manifest.json',out),JSON.stringify({assets:a.map(({body,w,h,...meta})=>meta)},null,2)+'\n');
+writeFileSync(new URL('pack.json',out),JSON.stringify({name:'ぽんっとコメディ漫画セット',author:'AI Paste Effect',license:'MIT'},null,2)+'\n');console.log(`manga-comedy: ${a.length} new assets`);

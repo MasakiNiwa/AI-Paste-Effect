@@ -61,3 +61,25 @@ describe('SVG aspect ratios', () => {
     for (const s of ['<svg>', '<svg viewBox="0 0 200 0">', '<svg viewBox="0 0 NaN 20">', '<svg width="100%" height="50%">']) expect(svgAspectRatio(s)).toBe(1);
   });
 });
+
+
+describe('comedy pack and scene integration', () => {
+  const pack = ALL_ASSETS.filter((a) => a.pack === 'manga-comedy');
+  it('discovers and accepts all 24 comedy IDs', () => {
+    expect(pack).toHaveLength(24);
+    for (const a of pack) {
+      expect(assetCatalog()).toContain(`"${a.id}"`);
+      const result = parsePlan(JSON.stringify({ layers: [{ effect: 'illustrationOverlay', params: { asset: a.id } }] }));
+      expect(result.warnings).toEqual([]);
+      expect(result.errors).toEqual([]);
+    }
+  });
+  it('accepts six comedy scenes with an explicit pack and keeps existing scenes valid', () => {
+    for (const kind of ['tsukkomi', 'panic', 'deadpan', 'smug', 'flustered', 'deflated', 'surprise', 'awkward']) {
+      const result = parsePlan(JSON.stringify({ layers: [{ effect: 'reactionScene', params: { kind, pack: 'manga-comedy' } }] }));
+      expect(result.warnings).toEqual([]);
+      expect(result.errors).toEqual([]);
+      expect(result.plan?.layers[0].params.kind).toBe(kind);
+    }
+  });
+});
