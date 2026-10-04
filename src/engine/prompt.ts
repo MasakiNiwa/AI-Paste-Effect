@@ -71,19 +71,32 @@ function jsonBlock(value: unknown): string {
 }
 
 /** 返答の形式の指示。talk=true なら JSON の前に自由に語ってもらう */
-function replyFormat(talk: boolean, revision: boolean): string {
-  if (!talk) return '返答は JSON を 1 つだけ ```json コードブロックで返してください。';
+/** 何案作ってもらうかの指示 */
+function variantsText(n: number, revision: boolean): string {
+  if (n <= 1) return revision ? '修正版の JSON は 1 つ' : 'JSON は 1 つ';
   return revision
-    ? '返答では、まずどこをどう変えたか、そのねらいを自由に語ってください（さらに良くするアイデアや、別の方向性の提案があれば添えてもかまいません）。そのあとに修正版の JSON を 1 つだけ ```json コードブロックで書いてください。'
-    : '返答では、まず画像を見た感想や、どんな演出にしたか・そのねらいやこだわりを、演出担当として自由に語ってください（さらに良くするアイデアや、別の方向性の提案があれば添えてもかまいません）。そのあとに JSON を 1 つだけ ```json コードブロックで書いてください。';
+    ? `修正版は ${n} 案。1 案目は要望どおりの修正、残りはそこから少し違う方向に振った案にして、それぞれ別の \`\`\`json コードブロックで（各案の title で違いがわかるように）`
+    : `方向性の違う案を ${n} 案。それぞれ別の \`\`\`json コードブロックで（各案の title で違いがわかるように。protect や座標は各案に書く）`;
+}
+
+/** 返答の形式の指示。talk=true なら JSON の前に自由に語ってもらう */
+function replyFormat(talk: boolean, revision: boolean, n: number): string {
+  const what = variantsText(n, revision);
+  if (!talk) return `返答は JSON だけにしてください。${what}。説明文は不要です。`;
+  const json = n > 1 ? `そのあとに JSON を書いてください。${what}。` : `そのあとに ${what}だけを \`\`\`json コードブロックで書いてください。`;
+  return revision
+    ? `返答では、まずどこをどう変えたか、そのねらいを自由に語ってください${n > 1 ? '（各案の違いも）' : ''}（さらに良くするアイデアや、別の方向性の提案があれば添えてもかまいません）。${json}`
+    : `返答では、まず画像を見た感想や、どんな演出にしたか・そのねらいやこだわりを、演出担当として自由に語ってください${n > 1 ? '（各案の狙いの違いも）' : ''}（さらに良くするアイデアや、別の方向性の提案があれば添えてもかまいません）。${json}`;
 }
 
 export interface PromptOptions {
   /** JSON の前に AI に自由に語ってもらうか */
   talk: boolean;
+  /** 作ってもらう案の数 */
+  variants?: number;
 }
 
-export function buildInitialPrompt({ talk }: PromptOptions = { talk: true }): string {
+export function buildInitialPrompt({ talk, variants = 1 }: PromptOptions = { talk: true }): string {
   return `# AI Paste Effect 演出プランの作成依頼
 
 あなたはアニメ・漫画イラストの「撮影・演出担当」です。
@@ -97,7 +110,7 @@ export function buildInitialPrompt({ talk }: PromptOptions = { talk: true }): st
 - 目安は 3〜6 ブロック、合計 4〜12 レイヤー。やりすぎず、絵の良さを引き立てる方向で。強い効果は opacity で加減してください。
 - 描き文字（soundText）・漫符（emotionMark）・フラッシュ（burst）などの漫画的リアクションは、要望や場面に合う時に使ってください。キャラの顔や体に重ならない位置に置きます。
 - 画像が添付されていない場合は、要望から一般的な構図を想定してください。
-- ${replyFormat(talk, false)}
+- ${replyFormat(talk, false, variants)}
 
 ${specText()}
 ## 記入例
@@ -110,22 +123,24 @@ ${REQUEST_PLACEHOLDER}
 
 export interface RevisionOptions extends PromptOptions {
   currentPlan: unknown;
+  /** 複数案から選んだ場合: [選んだ案の番号(1始まり), 全体の案数] */
+  picked?: [number, number];
   warnings?: string[];
   includeSpec: boolean;
 }
 
-export function buildRevisionPrompt({ currentPlan, warnings = [], includeSpec, talk }: RevisionOptions): string {
+export function buildRevisionPrompt({ currentPlan, warnings = [], includeSpec, talk, variants = 1, picked }: RevisionOptions): string {
   const warn =
     warnings.length > 0
       ? `\n## アプリが出した警告（直せるものは直してください）\n${warnings.slice(0, 20).map((w) => `- ${w}`).join('\n')}\n`
       : '';
   return `# AI Paste Effect 演出プランの修正依頼
 
-あなたが作った演出プラン JSON（下記）をアプリで画像に適用しました。
+あなたが作った演出プラン JSON（下記）をアプリで画像に適用しました。${picked && picked[1] > 1 ? `\n全 ${picked[1]} 案のうち、案 ${picked[0]} を選びました（下記がその案です）。` : ''}
 結果画像を添付している場合は、それが現在の仕上がりです。
-下の【修正の要望】に合わせて、修正版の JSON を全体を省略せずに返してください。
+下の【修正の要望】に合わせて、修正版の JSON を全体を省略せずに返してください（各案とも完全な JSON で）。
 画像そのものは描き変えられないので、演出だけで調整してください。
-${replyFormat(talk, true)}
+${replyFormat(talk, true, variants)}
 ${warn}
 ## 現在の JSON
 ${jsonBlock(currentPlan)}

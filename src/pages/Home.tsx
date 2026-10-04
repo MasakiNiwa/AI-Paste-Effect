@@ -17,10 +17,10 @@ import {
 import { Button, Card, StepHeader } from '../components/ui';
 import { Preview } from '../components/Preview';
 import { useToast } from '../components/Toast';
-import type { ParseResult } from '../engine/plan';
+import type { ReplyResult } from '../engine/plan';
 import { buildInitialPrompt, buildRevisionPrompt } from '../engine/prompt';
 import { EXAMPLE_PLAN_TEXT } from '../engine/example';
-import { useAppliedParse, useLiveParse } from '../hooks/usePipeline';
+import { pickVariant, useAppliedParse, useAppliedReply, useLiveReply } from '../hooks/usePipeline';
 import { copyText, readText } from '../lib/clipboard';
 import { useOutput } from '../store/output';
 import { useSession } from '../store/session';
@@ -32,14 +32,24 @@ function PromptStep() {
   const renderErrors = useOutput((s) => s.renderErrors);
   const includeSpec = useSettings((s) => s.includeSpecInRevision);
   const talk = useSettings((s) => s.aiTalk);
+  const variants = useSettings((s) => s.variantCount);
+  const reply = useAppliedReply();
+  const picked = useSession((s) => s.variant);
 
   const copyPrompt = async () => {
-    const ok = await copyText(buildInitialPrompt({ talk }));
+    const ok = await copyText(buildInitialPrompt({ talk, variants }));
     toast(ok ? 'プロンプトをコピーしました' : 'コピーできませんでした', ok ? 'ok' : 'err');
   };
   const copyRevision = async () => {
     const ok = await copyText(
-      buildRevisionPrompt({ currentPlan: applied.raw, warnings: [...applied.warnings, ...renderErrors], includeSpec, talk }),
+      buildRevisionPrompt({
+        currentPlan: applied.raw,
+        warnings: [...applied.warnings, ...renderErrors],
+        includeSpec,
+        talk,
+        variants,
+        picked: [Math.min(picked, reply.variants.length - 1) + 1, reply.variants.length],
+      }),
     );
     toast(ok ? '修正依頼をコピーしました' : 'コピーできませんでした', ok ? 'ok' : 'err');
   };
@@ -72,7 +82,8 @@ function JsonStep() {
   const toast = useToast((s) => s.show);
   const { jsonText, appliedText, setJsonText, apply } = useSession();
   const autoApply = useSettings((s) => s.autoApply);
-  const live = useLiveParse();
+  const live = useLiveReply();
+  const variant = useSession((s) => s.variant);
   const renderErrors = useOutput((s) => s.renderErrors);
 
   const paste = async () => {
@@ -114,7 +125,7 @@ function JsonStep() {
           </Button>
         )}
       </div>
-      {jsonText.trim() && <PlanStatus result={live} renderErrors={jsonText === appliedText ? renderErrors : []} />}
+      {jsonText.trim() && <PlanStatus reply={live} variant={variant} renderErrors={jsonText === appliedText ? renderErrors : []} />}
     </Card>
   );
 }
@@ -232,7 +243,8 @@ export default function Home() {
   );
 }
 
-function PlanStatus({ result, renderErrors }: { result: ParseResult; renderErrors: string[] }) {
+function PlanStatus({ reply, variant, renderErrors }: { reply: ReplyResult; variant: number; renderErrors: string[] }) {
+  const result = pickVariant(reply, variant);
   const warnings = [...result.warnings, ...renderErrors];
   if (result.errors.length > 0) {
     return (
@@ -253,7 +265,9 @@ function PlanStatus({ result, renderErrors }: { result: ParseResult; renderError
     <div className="mt-3 space-y-2 text-xs">
       <p className="flex items-center gap-1.5 font-medium text-ok">
         <CheckCircle2 className="size-4" />
-        {result.plan?.layers.length} レイヤーを読み込みました
+        {reply.variants.length > 1
+          ? `${reply.variants.length} 案を読み込みました（いまは案 ${Math.min(variant, reply.variants.length - 1) + 1}・${result.plan?.layers.length} レイヤー）`
+          : `${result.plan?.layers.length} レイヤーを読み込みました`}
       </p>
       {warnings.length > 0 && (
         <details className="rounded-xl border border-warn/30 bg-warn/5 p-3 text-warn">

@@ -15,6 +15,8 @@ interface OutputStore {
   imageError: string | null;
   /** 結果タブを見ていない新しい結果があるか（スマホのバッジ用） */
   unseen: boolean;
+  /** 複数案のサムネイル（案の番号 → 表示用 URL） */
+  thumbs: Record<number, string>;
   set: (patch: Partial<Omit<OutputStore, 'set'>>) => void;
 }
 
@@ -25,5 +27,6 @@ export const useOutput = create<OutputStore>((set) => ({
   renderErrors: [],
   imageError: null,
   unseen: false,
+  thumbs: {},
   set: (patch) => set(patch),
 }));
