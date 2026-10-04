@@ -8,6 +8,7 @@ import './index.css';
 const Settings = lazy(() => import('./pages/Settings'));
 const Help = lazy(() => import('./pages/Help'));
 const Result = lazy(() => import('./pages/Result'));
+const Edit = lazy(() => import('./pages/Edit'));
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -18,6 +19,7 @@ createRoot(document.getElementById('root')!).render(
           <Route element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="result" element={<Result />} />
+            <Route path="edit" element={<Edit />} />
             <Route path="settings" element={<Settings />} />
             <Route path="help" element={<Help />} />
             <Route path="*" element={<Home />} />

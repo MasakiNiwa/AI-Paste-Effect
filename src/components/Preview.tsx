@@ -13,11 +13,19 @@ const canShareFiles = typeof navigator !== 'undefined' && 'canShare' in navigato
  * 結果の表示と比較。元画像を常に下に敷き、結果を上に重ねて
  * 不透明度やクリップだけを切り替える（画像の差し替えによるチラつきを防ぐ）。
  */
-function Viewer({ fill }: { fill: boolean }) {
+export interface PickProps {
+  /** 指定すると、画像のタップで位置（正規化座標）を受け取るモードになる */
+  onPick?: (p: { x: number; y: number }) => void;
+  /** 画像上に表示する目印（正規化座標） */
+  markers?: { x: number; y: number; active?: boolean }[];
+}
+
+export function Viewer({ fill, onPick, markers = [] }: { fill: boolean } & PickProps) {
   const original = useOutput((s) => s.original);
   const result = useOutput((s) => s.result);
   const rendering = useOutput((s) => s.rendering);
-  const mode = useSettings((s) => s.compareMode);
+  const compareMode = useSettings((s) => s.compareMode);
+  const mode = onPick ? 'hold' : compareMode;
   const [holding, setHolding] = useState(false);
   const [pos, setPos] = useState(50);
   const box = useRef<HTMLDivElement>(null);
@@ -44,8 +52,14 @@ function Viewer({ fill }: { fill: boolean }) {
     const r = box.current?.getBoundingClientRect();
     if (r) setPos(Math.min(100, Math.max(0, ((e.clientX - r.left) / r.width) * 100)));
   };
-  const handlers =
-    mode === 'hold'
+  const handlers = onPick
+    ? {
+        onPointerDown: (e: PointerEvent) => {
+          const r = box.current?.getBoundingClientRect();
+          if (r) onPick({ x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height });
+        },
+      }
+    : mode === 'hold'
       ? {
           onPointerDown: () => result && setHolding(true),
           onPointerUp: () => setHolding(false),
@@ -74,7 +88,7 @@ function Viewer({ fill }: { fill: boolean }) {
       {original ? (
         <div
           ref={box}
-          className={`relative ${mode === 'slider' && result ? 'cursor-ew-resize touch-none' : ''}`}
+          className={`relative ${onPick ? 'cursor-crosshair touch-none' : mode === 'slider' && result ? 'cursor-ew-resize touch-none' : ''}`}
           style={{ width: dispW, height: dispH }}
           onContextMenu={(e) => e.preventDefault()}
           {...handlers}
@@ -93,6 +107,18 @@ function Viewer({ fill }: { fill: boolean }) {
                     : { clipPath: `inset(0 0 0 ${pos}%)` }
                 }
               />
+            )}
+            {markers.map((m, i) => (
+              <span
+                key={i}
+                className={`pointer-events-none absolute size-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 shadow ${
+                  m.active ? 'border-white bg-accent' : 'border-white/90 bg-white/30'
+                }`}
+                style={{ left: `${m.x * 100}%`, top: `${m.y * 100}%` }}
+              />
+            ))}
+            {onPick && (
+              <div className="pointer-events-none absolute inset-0 ring-2 ring-accent ring-inset" />
             )}
             {result && mode === 'slider' && (
               <div className="pointer-events-none absolute inset-y-0" style={{ left: `${pos}%` }}>
@@ -232,6 +258,7 @@ export function Preview({ fill = false }: { fill?: boolean }) {
   const format = useSettings((s) => s.exportFormat);
   const applied = useAppliedParse();
   const plan = applied.plan;
+  const showComment = useSettings((s) => s.showAiComment) && !!applied.comment;
 
   const exportBlob = async () => {
     const blob = await canvasToBlob(result!.canvas, format);
@@ -276,7 +303,7 @@ export function Preview({ fill = false }: { fill?: boolean }) {
           </Button>
         </div>
       </div>
-      {result && (plan?.title || applied.comment) && (
+      {result && (plan?.title || showComment) && (
         <div className={`space-y-3 ${fill ? 'max-h-[35dvh] shrink-0 overflow-y-auto' : ''}`}>
           {plan?.title && (
             <div className="rounded-xl bg-surface-2 px-3 py-2.5">
@@ -284,7 +311,7 @@ export function Preview({ fill = false }: { fill?: boolean }) {
               {plan.intent && <p className="mt-0.5 text-xs text-muted">{plan.intent}</p>}
             </div>
           )}
-          {applied.comment && <AiComment text={applied.comment} />}
+          {showComment && <AiComment text={applied.comment!} />}
         </div>
       )}
     </div>

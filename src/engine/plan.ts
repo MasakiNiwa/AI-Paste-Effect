@@ -48,6 +48,8 @@ export interface ParseResult {
   raw?: unknown;
   /** JSON の外に書かれていた AI の語り */
   comment?: string;
+  /** アプリ上で手動編集されたものか */
+  edited?: boolean;
   errors: string[];
   warnings: string[];
 }
@@ -216,6 +218,11 @@ export function parseReply(text: string): ReplyResult {
 export function parsePlan(text: string): ParseResult {
   const r = parseReply(text);
   return r.variants[0] ?? { errors: r.errors, warnings: [], comment: r.comment };
+}
+
+/** 演出プランのオブジェクト 1 つを解析する（手動編集の結果などに使う） */
+export function compilePlan(value: unknown): ParseResult {
+  return compileRoot(value);
 }
 
 function compileRoot(value: unknown): ParseResult {

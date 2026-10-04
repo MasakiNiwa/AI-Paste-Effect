@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { RotateCcw } from 'lucide-react';
-import { Button, Card } from '../components/ui';
+import { Button, Card, Switch as Toggle } from '../components/ui';
 import { useToast } from '../components/Toast';
 import { useSession } from '../store/session';
 import { useSettings, type ExportFormat, type Theme } from '../store/settings';
@@ -44,21 +44,6 @@ function Segmented<T extends string | number>({
   );
 }
 
-function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label: string }) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      aria-label={label}
-      onClick={() => onChange(!checked)}
-      className={`relative h-7 w-12 rounded-full transition ${checked ? 'bg-accent' : 'bg-line'}`}
-    >
-      <span className={`absolute top-1 left-1 size-5 rounded-full bg-white shadow transition ${checked ? 'translate-x-5' : ''}`} />
-    </button>
-  );
-}
-
 export default function Settings() {
   const s = useSettings();
   const toast = useToast((t) => t.show);
@@ -80,6 +65,15 @@ export default function Settings() {
                 { value: 'dark', label: 'ダーク' },
               ]}
             />
+          </Row>
+        </div>
+      </Card>
+
+      <Card>
+        <h2 className="mb-3 text-xs font-bold tracking-wider text-muted">結果画面</h2>
+        <div className="divide-y divide-line">
+          <Row title="AI のコメントを表示" desc="オフにすると結果画面がすっきりして、イラストを大きく表示できます（AI への依頼内容は変わりません）。">
+            <Toggle label="AI のコメントを表示" checked={s.showAiComment} onChange={(showAiComment) => s.set({ showAiComment })} />
           </Row>
         </div>
       </Card>

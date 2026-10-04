@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { CircleHelp, Image as ImageIcon, PenLine, RotateCcw, Settings } from 'lucide-react';
+import { CircleHelp, Image as ImageIcon, PenLine, RotateCcw, Settings, SlidersHorizontal } from 'lucide-react';
 import { usePipeline } from '../hooks/usePipeline';
 import { useOutput } from '../store/output';
 import { useSession } from '../store/session';
@@ -24,6 +24,7 @@ function useApplyTheme() {
 const NAV = [
   { to: '/', label: '作成', icon: PenLine },
   { to: '/result', label: '結果', icon: ImageIcon, mobileOnly: true },
+  { to: '/edit', label: '編集', icon: SlidersHorizontal },
   { to: '/settings', label: '設定', icon: Settings },
   { to: '/help', label: 'ヘルプ', icon: CircleHelp },
 ];
@@ -95,7 +96,7 @@ export function Layout() {
 
       {/* スマホ用の下部ナビゲーション */}
       <nav className="z-40 shrink-0 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden">
-        <div className="mx-auto grid h-16 max-w-md grid-cols-4">
+        <div className="mx-auto grid h-16 max-w-md grid-cols-5">
           {NAV.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
