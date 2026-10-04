@@ -1,0 +1,388 @@
+{
+  "assets": [
+    {
+      "id": "shock/lines3",
+      "file": "shock-lines3.svg",
+      "label": "細い驚き線3本。頭上の余白に小さく。強い衝撃より軽い気付き向け",
+      "tags": [
+        "shock",
+        "delicate"
+      ],
+      "colors": [
+        "#454657",
+        "#ffffff"
+      ],
+      "size": 0.14,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "shock/exclaim",
+      "file": "shock-exclaim.svg",
+      "label": "細く揺れる「!!」。頭の横へ小さく。静かな場面では1点だけ",
+      "tags": [
+        "shock",
+        "delicate"
+      ],
+      "colors": [
+        "#454657",
+        "#ffffff"
+      ],
+      "size": 0.12,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "shock/crack",
+      "file": "shock-crack.svg",
+      "label": "細い折れた稲妻。頭の横の余白へ。ガーンの控えめなアクセント",
+      "tags": [
+        "shock",
+        "delicate"
+      ],
+      "colors": [
+        "#767592",
+        "#ffffff"
+      ],
+      "size": 0.18,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "comedy/sweatBig",
+      "file": "comedy-sweatBig.svg",
+      "label": "細線の小さな汗。頭の横の余白に。肌へ直接重ねない",
+      "tags": [
+        "comedy",
+        "delicate"
+      ],
+      "colors": [
+        "#66889a",
+        "#b9d9e4"
+      ],
+      "size": 0.14,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "comedy/sweatTrio",
+      "file": "comedy-sweatTrio.svg",
+      "label": "疎らな汗3つ。頭の斜め横へ。小さいまま使う",
+      "tags": [
+        "comedy",
+        "delicate"
+      ],
+      "colors": [
+        "#66889a",
+        "#b9d9e4"
+      ],
+      "size": 0.16,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "comedy/angerBig",
+      "file": "comedy-angerBig.svg",
+      "label": "細い怒りマーク。頭の斜め上の余白に。控えめなムッとした気持ち",
+      "tags": [
+        "comedy",
+        "delicate"
+      ],
+      "colors": [
+        "#b66068",
+        "#ffffff"
+      ],
+      "size": 0.13,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "comedy/questionBig",
+      "file": "comedy-questionBig.svg",
+      "label": "細い疑問符。頭の横に小さく。穏やかな困惑",
+      "tags": [
+        "comedy",
+        "delicate"
+      ],
+      "colors": [
+        "#454657",
+        "#ffffff"
+      ],
+      "size": 0.14,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "comedy/steam",
+      "file": "comedy-steam.svg",
+      "label": "輪郭だけの小さな湯気。頭上の余白へ。照れ・軽い怒り",
+      "tags": [
+        "comedy",
+        "delicate"
+      ],
+      "colors": [
+        "#454657",
+        "#ffffff"
+      ],
+      "size": 0.19,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "love/heartsTrio",
+      "file": "love-heartsTrio.svg",
+      "label": "輪郭だけの控えめなハート3つ。背景の余白に。顔を囲みすぎない",
+      "tags": [
+        "love",
+        "delicate"
+      ],
+      "colors": [
+        "#b77589",
+        "#ffffff"
+      ],
+      "size": 0.21,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "love/heartPound",
+      "file": "love-heartPound.svg",
+      "label": "細線のハートと短い鼓動線。胸の横の余白へ。肌に重ねない",
+      "tags": [
+        "love",
+        "delicate"
+      ],
+      "colors": [
+        "#b77589",
+        "#ffffff"
+      ],
+      "size": 0.18,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "joy/sparkleStars",
+      "file": "joy-sparkleStars.svg",
+      "label": "疎らで細いきらめき。光のある背景の余白に。少数で使う",
+      "tags": [
+        "joy",
+        "delicate"
+      ],
+      "colors": [
+        "#c0a169",
+        "#ffffff"
+      ],
+      "size": 0.24,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "motion/whoosh",
+      "file": "motion-whoosh.svg",
+      "label": "細く抜ける動きの弧。人物の横や手足の周辺の余白へ",
+      "tags": [
+        "motion",
+        "delicate"
+      ],
+      "colors": [
+        "#454657",
+        "#ffffff"
+      ],
+      "size": 0.28,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "calm/sigh",
+      "file": "calm-sigh.svg",
+      "label": "ため息の柔らかな曲線。口の横の余白へ小さく。口・顔には重ねない",
+      "tags": [
+        "calm",
+        "delicate"
+      ],
+      "colors": [
+        "#85919c",
+        "#bbc5cc"
+      ],
+      "size": 0.17,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "calm/hesitationDots",
+      "file": "calm-hesitationDots.svg",
+      "label": "段違いの小さな点3つ。頭の横の余白へ。ためらい・言葉が出ない場面",
+      "tags": [
+        "calm",
+        "delicate"
+      ],
+      "colors": [
+        "#454657",
+        "#ffffff"
+      ],
+      "size": 0.11,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "calm/brokenHalo",
+      "file": "calm-brokenHalo.svg",
+      "label": "途切れた柔らかな輪。顔の周囲の背景へ。輪の中心は空け、顔保護を維持",
+      "tags": [
+        "calm",
+        "delicate"
+      ],
+      "colors": [
+        "#b5a0ae",
+        "#ffffff"
+      ],
+      "size": 0.45,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "calm/fallingLines",
+      "file": "calm-fallingLines.svg",
+      "label": "力なく下がる短い線3本。頭の横へ小さく。しょんぼり・落胆",
+      "tags": [
+        "calm",
+        "delicate"
+      ],
+      "colors": [
+        "#7d8199",
+        "#ffffff"
+      ],
+      "size": 0.16,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "motion/tremblePair",
+      "file": "motion-tremblePair.svg",
+      "label": "震えを示す左右の波線。人物や手の周辺へ。線を肌に重ねない",
+      "tags": [
+        "motion",
+        "delicate"
+      ],
+      "colors": [
+        "#454657",
+        "#ffffff"
+      ],
+      "size": 0.3,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "motion/breezeArc",
+      "file": "motion-breezeArc.svg",
+      "label": "穏やかな風の流れ。空や水面の余白に横向きで。人物の輪郭には重ねない",
+      "tags": [
+        "motion",
+        "delicate"
+      ],
+      "colors": [
+        "#98b8c8",
+        "#d9e7ed"
+      ],
+      "size": 0.45,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "texture/dryBrush",
+      "file": "texture-dryBrush.svg",
+      "label": "乾いた筆の細いかすれ。背景の余白に薄く、multiply推奨。顔と肌は保護",
+      "tags": [
+        "texture",
+        "delicate"
+      ],
+      "colors": [
+        "#8797a6",
+        "#ffffff"
+      ],
+      "size": 0.5,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "texture/whiteScuff",
+      "file": "texture-whiteScuff.svg",
+      "label": "白い細かなかすれ。暗い背景や画面端へ低いopacityで。顔と肌は保護",
+      "tags": [
+        "texture",
+        "delicate"
+      ],
+      "colors": [
+        "#ffffff",
+        "#ffffff"
+      ],
+      "size": 0.45,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "texture/inkFlecks",
+      "file": "texture-inkFlecks.svg",
+      "label": "大小の疎らなインク飛沫。画面端や余白へ低いopacityで。顔と肌は保護",
+      "tags": [
+        "texture",
+        "delicate"
+      ],
+      "colors": [
+        "#69788b",
+        "#ffffff"
+      ],
+      "size": 0.33,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "texture/sparseDots",
+      "file": "texture-sparseDots.svg",
+      "label": "疎らな点描。背景の局所的な質感用。低いopacity、顔・髪・肌は保護",
+      "tags": [
+        "texture",
+        "delicate"
+      ],
+      "colors": [
+        "#8190a5",
+        "#ffffff"
+      ],
+      "size": 0.5,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "frame/petalCorner",
+      "file": "frame-petalCorner.svg",
+      "label": "抽象的な花びらの縁飾り。画面の角に。顔を囲まず、静かな恋・余韻に",
+      "tags": [
+        "frame",
+        "delicate"
+      ],
+      "colors": [
+        "#bb91a3",
+        "#d8bdc9"
+      ],
+      "size": 0.4,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    },
+    {
+      "id": "light/glimmerTrail",
+      "file": "light-glimmerTrail.svg",
+      "label": "細いきらめきの軌跡。光源側の背景の余白へ。screen推奨、顔には重ねない",
+      "tags": [
+        "light",
+        "delicate"
+      ],
+      "colors": [
+        "#fff0ce",
+        "#ffffff"
+      ],
+      "size": 0.4,
+      "license": "MIT",
+      "author": "AI Paste Effect"
+    }
+  ]
+}

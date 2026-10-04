@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<!-- Original vector artwork; MIT; rebuild: node scripts/gen-delicate-assets.mjs -->
+<g transform="translate(100 108) scale(1.25)"><path d="M0 10C-32 -10 -26 -35 -9 -27C-3 -25 0 -20 0 -17C4 -31 25 -33 28 -18C33 -4 12 8 0 20" fill="none" stroke="__C1__" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></g><path d="M42 71L32 59M62 49L57 33M143 64L155 51" fill="none" stroke="__C1__" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

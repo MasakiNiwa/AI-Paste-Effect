@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<!-- Original vector artwork; MIT; rebuild: node scripts/gen-delicate-assets.mjs -->
+<path d="M22 109C53 89 83 124 113 100S159 86 180 98" fill="none" stroke="__C1__" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /><path d="M43 132Q82 142 111 121" fill="none" stroke="__C2__" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

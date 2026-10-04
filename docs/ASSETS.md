@@ -61,3 +61,34 @@ src/assets/<セット名>/pack.json                       ← セットの名前
 
 ファイルを `main` ブランチに追加すると、GitHub Actions が自動でビルドして公開ページに反映されます。
 アプリのコードを変更する必要はありません。
+
+## 繊細な手描き・余韻セット（manga-delicate）
+
+細線・輪郭中心の24点（既存IDの描き分け12点＋新規ID12点）です。
+
+![24点の素材一覧](delicate-assets-preview.svg)
+
+設定の「漫画素材のセット」で「繊細な手描き・余韻セット」を選ぶと、
+既存の驚き線・汗・ハートなども細線版で描かれます。
+個別レイヤーの `pack: "manga-delicate"` でも指定できます。
+新規IDは自動でAI向けカタログに載り、標準セットのままでも使えます。
+
+| 新規ID | 用途 |
+| --- | --- |
+| calm/sigh | 口の横の余白に置くため息線 |
+| calm/hesitationDots | ためらいの段違いの点 |
+| calm/brokenHalo | 途切れた柔らかな輪 |
+| calm/fallingLines | 力なく下がる落胆線 |
+| motion/tremblePair | 震えの波線 |
+| motion/breezeArc | 穏やかな風の弧 |
+| texture/dryBrush | 乾いた筆のかすれ |
+| texture/whiteScuff | 暗い背景用の白いかすれ |
+| texture/inkFlecks | 疎らなインク飛沫 |
+| texture/sparseDots | 背景用の疎らな点描 |
+| frame/petalCorner | 角に置く抽象的な花びらの縁飾り |
+| light/glimmerTrail | 光源側へ置くきらめきの軌跡 |
+
+背景用の質感は低い `opacity` から始め、顔・髪・肌を保護してください。
+白いかすれときらめきは暗い背景で見えやすく、風や筆跡は透明な余白を含む
+正方形素材です。人物の後ろへの自動配置や人物の切り抜きは行いません。
+再生成は `node scripts/gen-delicate-assets.mjs`。既存セットは上書きしません。
